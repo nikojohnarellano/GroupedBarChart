@@ -1,0 +1,67 @@
+﻿.lineChart .axis path {
+  fill: none;
+  stroke: #E1E1E1; 
+  }
+.lineChart line.horizontalGrid {
+  fill: none;
+  stroke: lightgray; 
+  }
+.lineChart .dot {
+  fill-opacity: 1;
+  fill: #fff;
+}
+  
+.lineChart .axis{
+  font-size: 12px;    
+   }
+.lineChart .tooltip {
+  pointer-events: none;
+  padding: 5px 5px 5px 5px;
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0px 0px 3px 0px rgba(109,109,109,0.50);
+ }
+.lineChart .notActive {
+	 stroke-opacity: 0.3;
+ }
+.bar{
+    fill: #f8e25a;
+  }
+
+.bar:hover{
+    fill: brown;
+  }
+.x.axis path {
+  display: none;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}
+
+/*# sourceMappingURL=styles.css.map */

@@ -1,0 +1,54 @@
+﻿.barLineChart .axis path {
+  fill: none;
+  stroke: #E1E1E1; }
+.barLineChart line.horizontalGrid {
+  fill: none;
+  stroke: lightgray; }
+.barLineChart .dot {
+  fill-opacity: 1;
+  fill: #fff;
+}
+
+.barLineChart .bars {
+  fill: #ffe159;
+  fill-opacity: 1.0;
+}
+
+.barLineChart .bars:hover {
+  fill-opacity: 0.6;
+}
+
+.barLineChart .axis.label {
+  font-size: 16px;
+  font-weight: normal;
+}
+
+.barLineChart .axis text {
+  color: #606060;
+}
+
+.barLineChart .axis.slanted text {
+  transform: translate(0, 4px) rotate(-15deg);
+}
+
+.barLineChart .title {
+  font-size: 20px;
+  font-weight: strong;
+}
+
+.barLineChart .axis{
+  font-size: 12px;
+    
+   }
+ .barLineChart .tooltip {
+  pointer-events: none;
+  padding: 5px 5px 5px 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 2px;
+  box-shadow: 0px 0px 3px 0px rgba(109,109,109,0.50);
+ }
+ .barLineChart .notActive {
+	 stroke-opacity: 0.3;
+ }
+/*# sourceMappingURL=styles.css.map */

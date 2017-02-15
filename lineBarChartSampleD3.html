@@ -1,0 +1,180 @@
+<HTML>
+	<HEAD>
+		<!--Access to the page with http://localhost:8080/-->
+		<TITLE>Line Bar Chart</TITLE>
+		<SCRIPT src = "http://d3js.org/d3.v3.min.js"></SCRIPT>
+		<SCRIPT src = "jquery-2.2.1.min.js"></SCRIPT>
+		<SCRIPT src = "jquery-ui-1.11.4.min.js"></SCRIPT>
+		<SCRIPT src = "underscore-min.js"></SCRIPT>
+		<SCRIPT src = "moment.min.js"></SCRIPT>
+		<SCRIPT src = "datetime.js"></SCRIPT>
+		<SCRIPT src = "datetime-moment.js"></SCRIPT>
+		<SCRIPT src = "app.js"></SCRIPT>
+		<SCRIPT src = "LineBar.js"></SCRIPT>
+		<link rel="stylesheet" type="text/css" href="linebar.css">
+		<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</HEAD>
+	<BODY>
+		<p> This is a Bar and Line Chart</p>
+		 <div class="panel-body" >
+			<div class="row">
+				<div class="col-md-12">
+					<div id="lineChart" class="lineChart">
+					</div>
+				</div>
+			</div>
+	    </div>
+
+				
+		
+		<script>
+
+			var lineParam = {
+				width: $("#lineChart").width(),
+				height: 293,
+				elem: "#lineChart",
+				firstTooltipLableName: 'Score',
+				secondTooltipLableName: 'Volume',
+				firstTooltipLableSuffix: '',
+				showSecondTooltipLable: true,
+				scorePrecision: 0, //only set this if we want to overwrite the user settings precision		
+				legendYAxisLableName: 'Overall Score',
+				translateY: parseInt($("#lineChart").width() * 0.052) + "," + (293 / 2)
+			};
+	
+			var lc = new lineChart(lineParam);
+			
+			d3.json("LineBarChart.json" , function(data) {
+				
+				//var jsonData = JSON.parse(data);
+				lineData = setLineChartData(data);
+				var yDom0 = d3.extent(lineData, function(d) { return d.yval; });
+				var yDom1 = d3.extent(lineData, function(d) { return d.zval; });
+				var xDom = d3.extent(lineData, function(d) { return d.date; });
+				var xAxisTicks = _.uniq(_.map(lineData, function (d) { return d.xval })).length - 1;
+
+				var options = {
+					xAxisTicks: xAxisTicks
+				};
+		
+				
+
+				//lc.initChart(xDom, yDom0, yDom1, options, lineData);
+				var name = "Overall Enterprise";
+				//color for enterprise is fixed and black
+				var color = "red"; //#c3c3c3
+				var type = "100";
+				updateLineChart(lineData, color, type, "1", name);
+						
+					});
+					
+			function setLineChartData(data) {
+				data = _.filter(data, function(d) {
+					return d.yval != "-999";
+				});
+
+				//added these variables for UISF-282 (only impact "YW")
+				var customDate = {
+					startDate: new Date(2016,07,19),
+					endDate: new Date(2016,09,21)
+				};
+				
+				data = _.each(data, function(d) {
+					d = lc.setPeriodAndDate(d, customDate); //set d.period & d.date
+					d.yval = Number(d.yval);
+					d.nps = Number(d.nps);
+					d.zval = parseInt(Number(d.zval));
+				});
+
+				//the function below will make sure the data for last week of the year is displayed correctly
+				data = mergeEndOfYearDataToNextYear(data, lc, customDate);
+				return data;
+			}
+			
+			function mergeEndOfYearDataToNextYear(data, linechart, customDate) {
+				//try to found whether we have any end of the year data
+				var toMerge = _.filter(data, function (d) {
+					return d.breakdowntype === "YW" && d.breakdown.substring(2, 4) === "53";
+				});
+				//if there is any end of the year data
+				if (toMerge.length > 0) {
+					var newData = _.filter(data, function (d) {
+						return d.breakdown.substring(2, 4) !== "53";
+					});
+					_.each(toMerge, function (d) {
+						var vol = parseInt(d.zval);
+						var lastNPS = d.nps * vol;
+						var lastVal = d.yval * vol;
+						var newYear = parseInt(d.breakdown.substring(0, 2)) + 1;
+						var newBreakdown = newYear.toString() + "01";
+						var record = _.find(newData, function (r) {
+							return r.id === d.id && r.type === d.type && r.breakdown === newBreakdown;
+						});
+						var newVolume = 0, newNPS = 0, newYVal = 0;
+						if (record) { //there is already existing data for (XX+1)01, re-calculate the values
+							newVolume = parseInt(record.zval) + vol;
+							if (newVolume !== 0) {
+								newNPS = (lastNPS + (record.nps * parseInt(record.zval))) / newVolume;
+								newYVal = (lastVal + (record.yval * parseInt(record.zval))) / newVolume;
+							}
+							record.zval = newVolume;
+							record.nps = newNPS;
+							record.yval = newYVal;
+						} else { //no data exist for (XX+1)01
+							d.breakdown = newBreakdown;
+							//we had to overwrite the period & date again in here since we change the breakdown.
+							//TODO: Need to re-work the function to avoid the below assignment again
+							d = linechart.setPeriodAndDate(d, customDate); //assignment to d is not neccesarry, but just to make it clear
+							//insert it back to the list
+							newData.push(d);
+						}
+					});
+					//return merged data / modifed data depends on the if statement above
+					return newData;
+				}
+				//if there is none end of the year data, return the passed data back untouchable
+				return data;
+			}
+			
+			function updateLineChart(jsonData, color, type, id, name) {
+			
+				var dataGroups = _.groupBy(jsonData, function(d) {
+					return d.breakdown;
+				});
+				var mergedData = [];
+				_.each(dataGroups, function(dg) {
+					var vol = 0, score = 0, s = 0;
+					var period = '';
+					if (dg != undefined && dg.length > 0) {
+						period = dg[0].period;
+					}
+					_.each(dg, function(d) {
+						vol += d.zval;
+						score += d.yval * d.zval;
+					});
+					if (vol > 0) {
+						s = score / vol;
+					}
+					mergedData.push({ "date": dg[0].date, "yval": s, "period": period, "zval": vol, "id": dg[0].id, "type": dg[0].type });
+				});
+				var data = _.sortBy(mergedData, function(d) {
+					return d.date;
+				});
+				
+				var yDom0 = d3.extent(data, function(d) { return d.yval; });
+				var yDom1 = d3.extent(data, function(d) { return d.zval; });
+				var xDom = d3.extent(data, function(d) { return d.date; });
+				var xAxisTicks = _.uniq(_.map(data, function (d) { return d.xval })).length - 1;
+
+				var options = {
+					xAxisTicks: xAxisTicks
+				};
+		
+				lc.initChart(xDom, yDom0, yDom1, options, data);
+				lc.updateChart(data, color, type, id, name);
+			}
+			
+		</script>
+	</BODY>
+</HTML>

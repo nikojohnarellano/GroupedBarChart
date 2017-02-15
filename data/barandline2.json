@@ -1,0 +1,12 @@
+[{"id":369,"type":132,"xval":"Oct-31-2015","yval":30.67,"zval":13,"breakdown":"1634","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":369,"type":132,"xval":"Feb-1-2015","yval":20,"zval":86,"breakdown":"1635","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":369,"type":132,"xval":"Mar-29-2015","yval":72.5,"zval":80,"breakdown":"1636","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":369,"type":132,"xval":"Mar-29-2015","yval":72.7272,"zval":33,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Apr-18-2015","yval":50,"zval":104,"breakdown":"1634","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Oct-31-2015","yval":30,"zval":906,"breakdown":"1635","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Feb-16-2015","yval":63.7306,"zval":945,"breakdown":"1636","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Aug-8-2015","yval":-30,"zval":344,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Feb-1-2015","yval": 10,"zval":35,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Feb-1-2015","yval": 20.1,"zval":100,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Feb-1-2015","yval": 5.4,"zval":73,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
+  {"id":370,"type":132,"xval":"Feb-1-2015","yval": 13.1,"zval":44,"breakdown":"1637","breakdowntype":"YMD","parentrefid":163,"parentreftype":135}]
