@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+    <TITLE>Bar Line Chart</TITLE>
+    <SCRIPT src = "http://d3js.org/d3.v3.min.js"></SCRIPT>
+    <SCRIPT src = "js/jquery-2.2.1.min.js"></SCRIPT>
+    <SCRIPT src = "js/jquery-ui-1.11.4.min.js"></SCRIPT>
+    <SCRIPT src = "http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></SCRIPT>
+    <SCRIPT src = "js/underscore-min.js"></SCRIPT>
+    <SCRIPT src = "js/moment.min.js"></SCRIPT>
+    <SCRIPT src = "js/datetime.js"></SCRIPT>
+    <SCRIPT src = "js/datetime-moment.js"></SCRIPT>
+    <SCRIPT src = "js/app.js"></SCRIPT>
+    <SCRIPT src = "js/BarLine.js"></SCRIPT>
+    <link rel="stylesheet" type="text/css" href="css/barline.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link href='http://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' rel='stylesheet' type='text/css'>
+</head>
+<body>
+    <div class="panel-body" >
+        <div class="row">
+            <div class="col-md-12">
+                <div id="barLineChart" class="barLineChart">
+                </div>
+            </div>
+        </div>
+    </div>
+    <p class="clickUpdate"> Click to show dataset #1 <b>(breakdown by YM)</b></p>
+    <p class="clickUpdate2"> Click to show dataset #2 <b>(breakdown by YMD)</b></p>
+    <p class="clickUpdate3"> Click to show dataset #3 </p>
+	<br>
+	<div id="clickInfo"></div>
+
+    <script>
+
+    var barLineParam = {
+        width: $("#barLineChart").width(),
+        height: 500,
+        elem: "#barLineChart",
+        chartTitle: "Bar Line Chart",
+        xAxisLabel: "X Axis",
+        yAxisLabel: "Y Axis",
+        zAxisLabel: "Z Axis",
+        tooltipTitle: "Tooltip"
+
+    }
+
+    var barLineChart = new barLineChart(barLineParam);
+
+    d3.json("data/barandline.json", function(data) {
+
+        var barLineData = barLineChart.setBarLineChartData(data);
+
+        var xDom = d3.extent(barLineData, function(d) { return d.xval });
+        var yDom = d3.extent(barLineData, function(d) { return d.yval });
+        var zDom = d3.extent(barLineData, function(d) { return d.zval });
+
+        barLineChart.initChart(xDom, yDom, zDom, barLineData);
+
+        var lineColor = "#09aff3";
+        var barColor = "#ffe159";
+
+        barLineChart.updateChart(barLineData, lineColor, barColor);
+
+    });
+
+    d3.select(".clickUpdate")
+        .on("click", function() {
+            d3.json("data/barandline.json", function(data) {
+
+                var barLineData = barLineChart.setBarLineChartData(data);
+
+                var lineColor = "#09aff3";
+                var barColor = "#ffe159";
+
+                barLineChart.updateChart(barLineData, lineColor, barColor);
+
+            });
+        });
+
+    d3.select(".clickUpdate2")
+        .on("click", function() {
+            d3.json("data/barandline2.json", function(data) {
+
+                var barLineData = barLineChart.setBarLineChartData(data);
+
+                var lineColor = "#09aff3";
+                var barColor = "#ffe159";
+
+                barLineChart.updateChart(barLineData, lineColor, barColor);
+
+            });
+        });
+
+    d3.select(".clickUpdate3")
+        .on("click", function() {
+            d3.json("data/barandline3.json", function(data) {
+
+                var barLineData = barLineChart.setBarLineChartData(data);
+
+                var lineColor = "#09aff3";
+                var barColor = "#ffe159";
+
+                barLineChart.updateChart(barLineData, lineColor, barColor);
+
+            });
+        });
+
+
+    </script>
+
+</body>
