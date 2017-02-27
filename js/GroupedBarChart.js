@@ -59,7 +59,7 @@ var GroupedBarChart = function(param)
          * @param data - parsed data from input json
          * @returns processed data
          */
-        setGroupedBarChartData(data)
+        setGroupedBarChartData : function(data)
         {
             var values;
             var that = this;
