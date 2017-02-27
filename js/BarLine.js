@@ -14,7 +14,7 @@
  *                              {number} bottom - bottom margin
  *                              {number} left - left margin
  */
-var barLineChart = function(param) 
+var barLineChart = function(param)
 {
     var width = param.width;
     var height = param.height;
@@ -60,26 +60,26 @@ var barLineChart = function(param)
          * @param {number[]} zDom - array of two numbers representing min and max values of the z domain
          * @param data - parsed data from the input json
          */
-        setScales: function(xDom, yDom, zDom, data) 
+        setScales: function(xDom, yDom, zDom, data)
         {
             var that = this;
 
             if (that.isDate(data[0].xval)) // if data is date-based, generate an ordinal scale based it's values
             {
-                var dates = _.sortBy(_.uniq(_.map(data, 
-                    function(d) 
+                var dates = _.sortBy(_.uniq(_.map(data,
+                    function(d)
                     {
                         return that.toDate(d.xval);
                     }
-                )), 
-                    function(d) 
+                )),
+                    function(d)
                     {
                         return d - 0;
                     }
                 );
 
-                var dateStrings = _.uniq(_.map(dates, 
-                    function(d) 
+                var dateStrings = _.uniq(_.map(dates,
+                    function(d)
                     {
                         return moment(d).format(that.dateFormatString);
                     }
@@ -89,8 +89,8 @@ var barLineChart = function(param)
                 that.xScale = d3.scale.ordinal();
                 that.xScale.domain(dateStrings)
                     .rangeBands([0, that.w], 0.5, 0.1);
-            } 
-            else 
+            }
+            else
             {
                 that.xScale = d3.scale.linear();
                 that.xScale.range([0, that.w])
@@ -99,8 +99,8 @@ var barLineChart = function(param)
 
             that.yScale = d3.scale.linear();
             that.zScale = d3.scale.linear();
-                
-            // line chart values < 0 should start at the next nearest ­10 to provide a buffer
+
+            // line chart values < 0 should start at the next nearest ­10 to provide a buffer
             var yFactorLow = Math.floor(Math.log10(yDom[0])) - 1;
             var yFactorHigh = Math.floor(Math.log10(yDom[1])) - 1;
             var xFactor = Math.floor(Math.log10(zDom[1])) - 1;
@@ -125,7 +125,7 @@ var barLineChart = function(param)
 
             that.zAxis = d3.svg.axis()
                 .scale(that.zScale)
-                .orient("left");                  
+                .orient("left");
         },
 
         /**
@@ -173,10 +173,10 @@ var barLineChart = function(param)
 			if (xAxisLabel.length > 20){
 				xAxisLabel = xAxisLabel.substring(0,20);
 			}
-			
+
             if (xAxisLabel != undefined)
             {
-				
+
                 that.svg
                     .append("text")
                     .attr("class", "x axis label")
@@ -204,7 +204,7 @@ var barLineChart = function(param)
                     .text(yAxisLabel)
                     .attr("transform", "translate(" + (that.w  + 45) + "," + (that.h / 2) + ") rotate(90)");
             }
-            
+
 
             that.svg.append("g")
                 .attr("class", "horizGrid")
@@ -224,12 +224,12 @@ var barLineChart = function(param)
 
             that.addLine = d3.svg.line()
                 .x(
-                    function(d) 
+                    function(d)
                     {
                         return that.xScale(that.toDate(d.xval).format(that.dateFormatString)) + (that.xScale.rangeBand()/2);
                     })
                 .y(
-                    function(d) 
+                    function(d)
                     {
                         return that.yScale(d.yval);
                     });
@@ -238,7 +238,7 @@ var barLineChart = function(param)
         /**
          * Helper function. Deletes old bar elements after they are shrunk to zero (For animation pruposes, the bars are shrunk to zero instead of being instantly removed).
          */
-        deleteGarbage: function() 
+        deleteGarbage: function()
         {
             d3.selectAll(".toBeDeleted").remove();
         },
@@ -249,17 +249,17 @@ var barLineChart = function(param)
          * @param {string} lineColor - hex color code for the line
          * @param {string} barColor - hex color code for the bars
          */
-        updateChart: function(data, lineColor, barColor) 
+        updateChart: function(data, lineColor, barColor)
         {
             var barColorCode = barColor;
             var lineColorCode = lineColor;
             dataLength = data.length;
 
-            if (data.length > 0) 
+            if (data.length > 0)
             {
                 var that = this;
 
-                if (!d3.selectAll(".bars").empty()) 
+                if (!d3.selectAll(".bars").empty())
                 {
                     var xDom = d3.extent(data, function(d) { return d.xval });
                     var yDom = d3.extent(data, function(d) { return d.yval });
@@ -323,9 +323,9 @@ var barLineChart = function(param)
                     svg.selectAll("line.horizontalGrid")
                         .data(that.zScale.ticks())
                         .exit()
-                        .remove();         
+                        .remove();
                 }
-                                    
+
                 var bars = that.svg.append("g")
                     .attr("class", "bars")
                     .selectAll("bars.rect")
@@ -333,15 +333,15 @@ var barLineChart = function(param)
                     .enter()
                     .append("rect")
                     .attr("class", "bars")
-                    .attr("x", 
-                        function(d) 
+                    .attr("x",
+                        function(d)
                         {
                             return that.xScale(that.toDate(d.xval).format(that.dateFormatString));
                         })
                     .attr("y", that.h)
                     .attr("height", 0)
-                    .on('mouseover', 
-                        function(d) 
+                    .on('mouseover',
+                        function(d)
                         {
                             var tooltipText = '';
                             var xvalText = that.toDate(d.xval).format(that.dateFormatString);
@@ -371,8 +371,8 @@ var barLineChart = function(param)
 								.style("left", (d3.event.offsetX ) + "px")
 								.style("top", (d3.event.offsetY - 75) + "px");
                         })
-                    .on('mouseout', 
-                        function() 
+                    .on('mouseout',
+                        function()
                         {
                             tooltip.transition()
                                 .duration(500)
@@ -380,14 +380,14 @@ var barLineChart = function(param)
                         })
                     .transition()
                     .duration(1000)
-                    .attr("y", 
-                        function(d) 
+                    .attr("y",
+                        function(d)
                         {
                             return that.zScale(d.zval);
                         })
                     .attr("width", that.xScale.rangeBand())
-                    .attr("height", 
-                        function(d) 
+                    .attr("height",
+                        function(d)
                         {
                             return that.h - that.zScale(d.zval);
                         });
@@ -417,13 +417,13 @@ var barLineChart = function(param)
                 var datapoints = gLine.selectAll("circle")
                     .data(data)
                     .enter().append("g");
-                    
+
                 datapoints.append("circle")
                     .attr('class', 'dot')
                     .attr('stroke', lineColor)
                     .attr('stroke-width', "2")
-                    .on('mouseover', 
-                        function(d) 
+                    .on('mouseover',
+                        function(d)
                         {
                             var tooltipText = '';
                             var xvalText = that.toDate(d.xval).format(that.dateFormatString);
@@ -461,8 +461,8 @@ var barLineChart = function(param)
                                 .duration(150)
                                 .attr('r', 5 * 1.25);
                         })
-                    .on('mouseout', 
-                        function() 
+                    .on('mouseout',
+                        function()
                         {
                             tooltip.transition()
                                 .duration(500)
@@ -481,7 +481,7 @@ var barLineChart = function(param)
 							var text = "dot clicked: ";
 							text = text + "Date: " + xvalText;
 							text = text + ", Value: " + yvalText;
-							
+
 							d3.select("#clickInfo").html(text);
 						})
                     .transition()
@@ -495,7 +495,7 @@ var barLineChart = function(param)
                     .attr('r', 5)
                     .attr("stroke-width", 2)
                     .attr('cx', function(d) { return that.xScale(that.toDate(d.xval).format(that.dateFormatString)) + (that.xScale.rangeBand()/2); })
-                    .attr('cy', function (d) { return that.yScale(d.yval); });   
+                    .attr('cy', function (d) { return that.yScale(d.yval); });
             }
         },
 
@@ -504,7 +504,7 @@ var barLineChart = function(param)
          * @param {string} the string to check
          * @returns {bool} whether the string is a date or not
          */
-        isDate: function(data) 
+        isDate: function(data)
         {
             var dateFormat = "MMM-DD-YYYY";
             return moment(data, dateFormat, false).isValid();
@@ -515,19 +515,19 @@ var barLineChart = function(param)
          * @param {string} the string to get a date for
          * @returns {object} a date object representing the string
          */
-        toDate: function(date) 
+        toDate: function(date)
         {
             var dateFormat = "MMM-DD-YYYY";
             return moment(date, dateFormat, false);
         },
 
         /**
-         * Does some processing for json data. Groups year-months together or year-month-days together. 
+         * Does some processing for json data. Groups year-months together or year-month-days together.
          * Takes the aggregate z-axis values and average y-axis values for each group.
          * @param data - parsed data from input json
          * @returns processed data
          */
-        setBarLineChartData(data) 
+        setBarLineChartData(data)
         {
             var that = this;
 
@@ -536,70 +536,70 @@ var barLineChart = function(param)
             if (data[0].breakdowntype == "YM")
             {
                 that.dateFormatString = "MMM YYYY";
-                unsortedValues = _.map( _.groupBy(data, 
-                function(d) 
+                unsortedValues = _.map( _.groupBy(data,
+                function(d)
                 {
                     return that.toDate(d.xval).format("MMM YYYY");
-                }), 
-                function(d) 
+                }),
+                function(d)
                 {
                     return {
                         xval: that.toDate(d[0].xval).format("MMM YYYY"),
-                        yval: _.reduce(_.map(d, 
-                            function(d) 
+                        yval: _.reduce(_.map(d,
+                            function(d)
                             {
                                 return d.yval;
-                            }), 
-                            function(memo, num) 
+                            }),
+                            function(memo, num)
                             {
                                 return memo + num;
-                            }, 
+                            },
                             0) / d.length,
-                        zval: _.reduce(_.map(d, 
-                            function(d) 
+                        zval: _.reduce(_.map(d,
+                            function(d)
                             {
                                 return d.zval;
-                            }), 
-                            function(memo, num) 
+                            }),
+                            function(memo, num)
                             {
                                 return memo + num;
-                            }, 
-                            0) 
+                            },
+                            0)
                     }
                 });
             }
             else if (data[0].breakdowntype == "YMD")
             {
                 that.dateFormatString = "MMM DD YYYY";
-                unsortedValues = _.map( _.groupBy(data, 
-                function(d) 
+                unsortedValues = _.map( _.groupBy(data,
+                function(d)
                 {
                     return that.toDate(d.xval).format("MMM DD YYYY");
-                }), 
-                function(d) 
+                }),
+                function(d)
                 {
                     return {
                         xval: that.toDate(d[0].xval).format("MMM DD YYYY"),
-                        yval: _.reduce(_.map(d, 
-                            function(d) 
+                        yval: _.reduce(_.map(d,
+                            function(d)
                             {
                                 return d.yval;
-                            }), 
-                            function(memo, num) 
+                            }),
+                            function(memo, num)
                             {
                                 return memo + num;
-                            }, 
+                            },
                             0) / d.length,
-                        zval: _.reduce(_.map(d, 
-                            function(d) 
+                        zval: _.reduce(_.map(d,
+                            function(d)
                             {
                                 return d.zval;
-                            }), 
-                            function(memo, num) 
+                            }),
+                            function(memo, num)
                             {
                                 return memo + num;
-                            }, 
-                            0) 
+                            },
+                            0)
                     }
                 });
             }
@@ -612,8 +612,8 @@ var barLineChart = function(param)
 
             }
 
-            return _.sortBy(unsortedValues, 
-                function(d) 
+            return _.sortBy(unsortedValues,
+                function(d)
                 {
                     return that.toDate(d.xval) - 0;
                 });

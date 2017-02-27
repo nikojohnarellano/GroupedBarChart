@@ -11,7 +11,7 @@
     <SCRIPT src = "js/datetime.js"></SCRIPT>
     <SCRIPT src = "js/datetime-moment.js"></SCRIPT>
     <SCRIPT src = "js/app.js"></SCRIPT>
-    <SCRIPT src = "js/BarLine.js"></SCRIPT>
+    <SCRIPT src = "js/GroupedBarChart.js"></SCRIPT>
     <link rel="stylesheet" type="text/css" href="css/barline.css">
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
@@ -34,7 +34,7 @@
 
     <script>
 
-    var barLineParam = {
+    var groupedBarParam = {
         width: $("#barLineChart").width(),
         height: 500,
         elem: "#barLineChart",
@@ -45,68 +45,56 @@
         tooltipTitle: "Tooltip"
 
     }
+    var groupedBarChart = new GroupedBarChart(groupedBarParam);
 
-    var barLineChart = new barLineChart(barLineParam);
+    d3.json("data/groupedbarstring.json", function(data) {
 
-    d3.json("data/barandline.json", function(data) {
+        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
 
-        var barLineData = barLineChart.setBarLineChartData(data);
+        // Log groupedBarData to see if it's grouping the data in the right manner
+        console.log(groupedBarData);
 
-        var xDom = d3.extent(barLineData, function(d) { return d.xval });
-        var yDom = d3.extent(barLineData, function(d) { return d.yval });
-        var zDom = d3.extent(barLineData, function(d) { return d.zval });
+        /*
+          THESE WONT WORK FOR NOW SINCE WE DONT HAVE THESE METHODS YET IN groupedBarChart.js
 
-        barLineChart.initChart(xDom, yDom, zDom, barLineData);
+          var xDom = d3.extent(barLineData, function(d) { return d.xval });
+          var yDom = d3.extent(barLineData, function(d) { return d.yval });
+          var zDom = d3.extent(barLineData, function(d) { return d.zval });
 
-        var lineColor = "#09aff3";
-        var barColor = "#ffe159";
+          groupedBarChart.initChart(xDom, yDom, zDom, groupedBarData);
 
-        barLineChart.updateChart(barLineData, lineColor, barColor);
+          var lineColor = "#09aff3";
+          var barColor = "#ffe159";
+
+          groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
+        */
 
     });
 
-    d3.select(".clickUpdate")
-        .on("click", function() {
-            d3.json("data/barandline.json", function(data) {
+    // TODO This doesn't output anything to the console. Need to ask Jose about the YW breakdown type.
+    d3.json("data/groupedbaryw.json", function(data) {
 
-                var barLineData = barLineChart.setBarLineChartData(data);
+        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
 
-                var lineColor = "#09aff3";
-                var barColor = "#ffe159";
+        // Log groupedBarData to see if it's grouping the data in the right manner
+        console.log(groupedBarData);
 
-                barLineChart.updateChart(barLineData, lineColor, barColor);
+        /*
+          THESE WONT WORK FOR NOW SINCE WE DONT HAVE THESE METHODS YET IN groupedBarChart.js
 
-            });
-        });
+          var xDom = d3.extent(barLineData, function(d) { return d.xval });
+          var yDom = d3.extent(barLineData, function(d) { return d.yval });
+          var zDom = d3.extent(barLineData, function(d) { return d.zval });
 
-    d3.select(".clickUpdate2")
-        .on("click", function() {
-            d3.json("data/barandline2.json", function(data) {
+          groupedBarChart.initChart(xDom, yDom, zDom, groupedBarData);
 
-                var barLineData = barLineChart.setBarLineChartData(data);
+          var lineColor = "#09aff3";
+          var barColor = "#ffe159";
 
-                var lineColor = "#09aff3";
-                var barColor = "#ffe159";
+          groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
+        */
 
-                barLineChart.updateChart(barLineData, lineColor, barColor);
-
-            });
-        });
-
-    d3.select(".clickUpdate3")
-        .on("click", function() {
-            d3.json("data/barandline3.json", function(data) {
-
-                var barLineData = barLineChart.setBarLineChartData(data);
-
-                var lineColor = "#09aff3";
-                var barColor = "#ffe159";
-
-                barLineChart.updateChart(barLineData, lineColor, barColor);
-
-            });
-        });
-
+    });
 
     </script>
 

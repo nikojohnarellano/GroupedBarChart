@@ -1,8 +1,0 @@
-[{"id":369,"type":132,"xval":"65.23","yval":305,"xlabel":Monday,"ylabel":Week1,"breakdown":"160808","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"86.27","yval":581,"xlabel":Tuesday,"ylabel":Week1,"breakdown":"160809","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"82.96","yval":725,"xlabel":Wednesday,"ylabel":Week1,"breakdown":"160810","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"78.36","yval":272,"xlabel":Thursday,"ylabel":Week1,"breakdown":"160811","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"68.45","yval":282,"xlabel":Monday,"ylabel":Week2,"breakdown":"160815","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"85.96","yval":445,"xlabel":Tuesday,"ylabel":Week2,"breakdown":"160816","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"88.18","yval":654,"xlabel":Wednesday,"ylabel":Week2,"breakdown":"160817","breakdowntype":"YMD","parentrefid":163,"parentreftype":135},
-  {"id":369,"type":132,"xval":"73.40","yval":214,"xlabel":Thursday,"ylabel":Week2,"breakdown":"160818","breakdowntype":"YMD","parentrefid":163,"parentreftype":135}]
