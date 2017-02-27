@@ -17,7 +17,7 @@
 	var circleRadius = param.circleRadius || 5;
 
 	var scorePrecision;
-	if (param.scorePrecision != undefined) {
+	if (param.scorePrecision !== undefined) {
 		scorePrecision = param.scorePrecision;
 	} else {
 		scorePrecision = window.Settings.ScorePrecision;
@@ -31,8 +31,8 @@
 		.call(responsivefy)
 		.append('g')
 		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
-		
-				  
+
+
 	d3.select(elem).selectAll("div.tooltip")
 		.each(function() {
 			$(this).remove();
@@ -40,7 +40,7 @@
 	var tooltip = d3.select(elem).append("div")
 		.attr("class", "tooltip")
 		.style("opacity", 0);
-		
+
 	return {
 			h: height - margin.top - margin.bottom,
 			w: width - margin.left - margin.right,
@@ -93,15 +93,15 @@
 
 				//that.yScale = d3.scale.linear()
 				//	.range([that.h, 0]);
-					
+
 				that.yScale0 = d3.scale.linear()
 					.range([that.h, 0]);
-					
+
 				that.yScale1 = d3.scale.linear()
-					.range([that.h, 0]);	
+					.range([that.h, 0]);
 
 				that.setScales(xDom, yDom0, yDom1, options);
-                if (data != undefined)
+                if (data !== undefined)
 				{
 				    that.xAxis = d3.svg.axis().scale(that.xScale)
 					.tickFormat(d3.time.format(that.dateAxisFormat))
@@ -116,7 +116,7 @@
                                         .ticks(that.xAxisTicks)
                                         .orient("bottom");
 				}
-				
+
 				that.svg.append("g")
 						.append("line")
 						.attr({
@@ -127,15 +127,15 @@
 							"y2": that.h,
 							"stroke-width": 1
 						});
-				
+
 				that.yAxis0 = d3.svg.axis().scale(that.yScale0)
 					.orient("left")
 					.ticks(10);
-					
+
 				that.yAxis1 = d3.svg.axis().scale(that.yScale1)
 					.orient("right")
-					.ticks(10);		
-				
+					.ticks(10);
+
 
 				that.svg
 					.append("g")
@@ -153,27 +153,27 @@
 					.append("g")
 					.attr("class", "y axis")
 					.call(that.yAxis0);
-					
+
 				that.svg
 					.append("g")
 					.attr("class", "y axis")
 					.attr("transform", "translate(" + that.w + ", 0)")
-					.call(that.yAxis1);	
-					
-					
-					
+					.call(that.yAxis1);
 
-				if (legendYAxisLableName != undefined && legendYAxisLableName != "") {
+
+
+
+				if (legendYAxisLableName !== undefined && legendYAxisLableName !== "") {
 					that.svg.append("text")
 						.attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
-						.attr("transform", "translate(-" + translateY + ")rotate(-90)") // text is drawn off the screen top left, move down and out and rotate                    
+						.attr("transform", "translate(-" + translateY + ")rotate(-90)") // text is drawn off the screen top left, move down and out and rotate
 						.style("fill", "#acacac")
 						.style("font-size", "12px")
 						.attr("dx", "2em")
 						.text(legendYAxisLableName);
 				}
-				
-				if (legendXAxisLableName != undefined && legendXAxisLableName != "") {
+
+				if (legendXAxisLableName !== undefined && legendXAxisLableName !== "") {
 					that.svg.append("text")
 						.attr("text-anchor", "middle") // this makes it easy to centre the text as the transform is applied to the anchor
 						.attr("transform", "translate(" + translateX + ")") // centre below axis
@@ -183,7 +183,7 @@
 						.text(legendXAxisLableName);
 				}
 
-				
+
 				//add line data
 				that.addLine = d3.svg.line()
 					//.interpolate('cardinal')
@@ -191,12 +191,12 @@
 						return that.xScale(d.date);
 					})
 					.y(function(d) {
-					    return that.yScale0(scorePrecision == 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision));
+					    return that.yScale0(scorePrecision === 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision));
 					});
-								
+
 			},
 			addStyle: function (pathID, data, type) {
-				
+
 					var strokeWidth = 2,  that = this;
 					that.svg.selectAll('path.line').each(function (index) {
 						$(this).attr("stroke-width", "2");
@@ -229,7 +229,7 @@
 				}
 				return strokeWidth;
 
-			}, 
+			},
 			updateStyle2: function(data, type, id) {
 				var that = this;
 				var pathID = type.toString() + id.toString();
@@ -246,7 +246,7 @@
 						}
 					}
 				);
-				},	
+				},
 				updateStyle: function(data, type, id) {
 				var that = this;
 				var pathID = type.toString() + id.toString();
@@ -267,7 +267,7 @@
 		updateChart: function(data, color, type, id, name) {
 			if (data.length > 0) {
 				var that = this;
-				if (type == undefined) {
+				if (type === undefined) {
 					type = data[0].type;
 				}
 				var pathID = type.toString() + id.toString();
@@ -280,14 +280,14 @@
 						$(this).remove();
 					}
 				});
-				
+
 				if (!remove) {
-					
-									
+
+
 					that.svg.selectAll('g.horizGrid').each(function () {
 						$(this).remove();
 					});
-					
+
 					// Background lines
 					that.svg.append("g")
 						.attr("class", "horizGrid")
@@ -301,7 +301,7 @@
 							"y2": function(d) { return that.yScale0(d); },
 							"stroke-dasharray": function(d) { return "3, 3"; }
 						});
-						
+
 					that.addBar = that.svg
 						.selectAll("rect")
 						.data(data)
@@ -314,7 +314,7 @@
 						.attr("height", 0)
 						.on('mouseover', function(d) {
 						    var tooltipText = '';
-						    var yval = scorePrecision == 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision);
+						    var yval = scorePrecision === 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision);
 							if (showSecondTooltipLable) {
 								tooltipText = '<b>' + name + '</b><br/>' +
 									//'<span style="color:' + color + '">\u25CF</span> ' + //firstTooltipLableName + ': <b>' + yval + firstTooltipLableSuffix + '</b><br/>' +
@@ -334,7 +334,7 @@
 							}
 							tooltip.transition()
 								.duration(200)
-								.style("opacity", .9);
+								.style("opacity", 0.9);
 							tooltip.html(tooltipText)
 								.style("left", (d3.event.offsetX ) + "px")
 								.style("border-color", color)
@@ -363,7 +363,7 @@
 						.duration(800)
 						.delay(function(d,i){return i*500;})
 						.attr("y", function(d) {return that.yScale1(d.zval); })
-						.attr("height", function(d) {return that.h - that.yScale1(d.zval); });		
+						.attr("height", function(d) {return that.h - that.yScale1(d.zval); });
 
 					var gLine = that.svg.call(responsivefy)
 						.append("g")
@@ -376,7 +376,7 @@
 						.on('mouseout', function() {
 							that.unsetFocus();
 						});
-											
+
 
 					var path = gLine.append("path")
 						.attr("class", "line")
@@ -384,11 +384,11 @@
 						.attr('fill', "none")
 						.attr("stroke-width", 2)
 						.attr("d", that.addLine(data));
-						
+
 					var totalLength = path.node().getTotalLength();
 
 
-					
+
 					path.attr("stroke-dasharray", totalLength + " " + totalLength)
 					.attr("stroke-dashoffset", totalLength)
 						.transition()
@@ -406,16 +406,16 @@
 					var datapoints = gLine.selectAll("circle")
 						.data(data)
 						.enter().append("g");
-					
+
 					datapoints.append("circle")
 						.attr('class', 'dot')
 						.attr('stroke', color)
 						.attr('stroke-width', "2")
 						.attr('cx', function(d) { return that.xScale(d.date); })
-						.attr('cy', function (d) { return that.yScale0(scorePrecision == 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision)); })
+						.attr('cy', function (d) { return that.yScale0(scorePrecision === 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision)); })
 						.on('mouseover', function(d) {
 						    var tooltipText = '';
-						    var yval = scorePrecision == 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision);
+						    var yval = scorePrecision === 0 ? Number(Math.round(d.yval)).toFixed(scorePrecision) : Number(d.yval).toFixed(scorePrecision);
 							if (showSecondTooltipLable) {
 								tooltipText = '<b>' + name + '</b><br/>' +
 									'<span style="color:' + color + '">\u25CF</span> ' + firstTooltipLableName + ': <b>' + yval + firstTooltipLableSuffix + '</b><br/>' +
@@ -435,7 +435,7 @@
 							}
 							tooltip.transition()
 								.duration(200)
-								.style("opacity", .9);
+								.style("opacity", 0.9);
 							tooltip.html(tooltipText)
 								.style("left", (d3.event.offsetX ) + "px")
 								.style("border-color", color)
@@ -484,7 +484,7 @@
 						stderr.draw();
 					}
 					that.updateStyle(data,type,id);
-					
+
 				}
 			}
 		},
@@ -545,7 +545,7 @@
 						endOfYw = endOfWeekMomentDate;
 					}
 					if (startOfYw === endOfYw) {
-						//if startOfYw match the endOfYw, then assign overwriteMomentDate variable to startOfYw (or endOfYw the same too), 
+						//if startOfYw match the endOfYw, then assign overwriteMomentDate variable to startOfYw (or endOfYw the same too),
 						// so that when 'date' is added, we use the adjusted one (i.e not always the end of the week like the value of xval)
 						period = startOfYw;
 						if (endOfYw === startOfWeekMomentDate) //only assign overwrite value when the custom end date is custom input
