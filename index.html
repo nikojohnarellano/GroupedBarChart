@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <head>
-    <TITLE>Bar Line Chart</TITLE>
+    <TITLE>Grouped Bar and Line Chart</TITLE>
     <SCRIPT src = "http://d3js.org/d3.v3.min.js"></SCRIPT>
     <SCRIPT src = "js/jquery-2.2.1.min.js"></SCRIPT>
     <SCRIPT src = "js/jquery-ui-1.11.4.min.js"></SCRIPT>
@@ -49,10 +49,10 @@
 
     d3.json("data/groupedbarstring.json", function(data) {
 
-        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
+        //var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
 
         // Log groupedBarData to see if it's grouping the data in the right manner
-        console.log(groupedBarData);
+        //console.log(groupedBarData);
 
         /*
           THESE WONT WORK FOR NOW SINCE WE DONT HAVE THESE METHODS YET IN groupedBarChart.js
@@ -60,14 +60,14 @@
           var xDom = d3.extent(barLineData, function(d) { return d.xval });
           var yDom = d3.extent(barLineData, function(d) { return d.yval });
           var zDom = d3.extent(barLineData, function(d) { return d.zval });
-
-          groupedBarChart.initChart(xDom, yDom, zDom, groupedBarData);
+*/
+          groupedBarChart.initChart(data);
 
           var lineColor = "#09aff3";
           var barColor = "#ffe159";
 
-          groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
-        */
+          //groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
+
 
     });
 

@@ -100,7 +100,8 @@ var barLineChart = function(param)
             that.yScale = d3.scale.linear();
             that.zScale = d3.scale.linear();
 
-            // line chart values < 0 should start at the next nearest ­10 to provide a buffer
+
+            // line chart values < 0 should start at the next nearest ten to provide a buffer
             var yFactorLow = Math.floor(Math.log10(yDom[0])) - 1;
             var yFactorHigh = Math.floor(Math.log10(yDom[1])) - 1;
             var xFactor = Math.floor(Math.log10(zDom[1])) - 1;
@@ -160,7 +161,7 @@ var barLineChart = function(param)
                 .attr("transform", "translate(" + that.w + ", 0)")
                 .call(that.yAxis);
 
-            if (chartTitle != undefined)
+            if (chartTitle !== undefined)
             {
                 that.svg
                     .append("text")
@@ -174,7 +175,8 @@ var barLineChart = function(param)
 				xAxisLabel = xAxisLabel.substring(0,20);
 			}
 
-            if (xAxisLabel != undefined)
+
+            if (xAxisLabel !== undefined)
             {
 
                 that.svg
@@ -185,7 +187,7 @@ var barLineChart = function(param)
                     .attr("transform", "translate(" + (that.w / 2) + "," + (that.h + 55) + ")");
             }
 
-            if (zAxisLabel != undefined)
+            if (zAxisLabel !== undefined)
             {
                 that.svg
                     .append("text")
@@ -195,7 +197,7 @@ var barLineChart = function(param)
                     .attr("transform", "translate(" + -45 + "," + (that.h / 2) + ") rotate(-90)");
             }
 
-            if (yAxisLabel != undefined)
+            if (yAxisLabel !== undefined)
             {
                 that.svg
                     .append("text")
@@ -208,7 +210,7 @@ var barLineChart = function(param)
 
             that.svg.append("g")
                 .attr("class", "horizGrid")
-                .selectAll("line.horizontalGrid").data(_.filter(that.zScale.ticks(), function(num){ return num != 0})).enter()
+                .selectAll("line.horizontalGrid").data(_.filter(that.zScale.ticks(), function(num){ return num !== 0})).enter()
                 .append("line")
                 .transition()
                 .duration(500)
@@ -261,9 +263,9 @@ var barLineChart = function(param)
 
                 if (!d3.selectAll(".bars").empty())
                 {
-                    var xDom = d3.extent(data, function(d) { return d.xval });
-                    var yDom = d3.extent(data, function(d) { return d.yval });
-                    var zDom = d3.extent(data, function(d) { return d.zval });
+                    var xDom = d3.extent(data, function(d) { return d.xval;});
+                    var yDom = d3.extent(data, function(d) { return d.yval;});
+                    var zDom = d3.extent(data, function(d) { return d.zval;});
 
                     that.setScales(xDom, yDom, zDom, data);
 
@@ -347,14 +349,14 @@ var barLineChart = function(param)
                             var xvalText = that.toDate(d.xval).format(that.dateFormatString);
                             var zvalText = d.zval;
 
-                            if (xAxisLabel != undefined)
+                            if (xAxisLabel !== undefined)
                             {
                                 tooltipText = "<strong>" + xAxisLabel + ": </strong>";
                             }
 
                             tooltipText += xvalText + '<br/>';
 
-                            if (zAxisLabel != undefined)
+                            if (zAxisLabel !== undefined)
                             {
                                 tooltipText += "<strong>" + zAxisLabel + ": </strong>";
                             }
@@ -363,7 +365,7 @@ var barLineChart = function(param)
 
                             tooltip.transition()
                                 .duration(200)
-                                .style("opacity", .9)
+                                .style("opacity", 0.9)
                                 .style("border-color", barColorCode);
                             tooltip.html(tooltipText)
                                 .style("border-color", "#c3c3c3")
@@ -429,14 +431,14 @@ var barLineChart = function(param)
                             var xvalText = that.toDate(d.xval).format(that.dateFormatString);
                             var yvalText = d.yval;
 
-                            if (xAxisLabel != undefined)
+                            if (xAxisLabel !== undefined)
                             {
                                 tooltipText = "<strong>" + xAxisLabel + ": </strong>";
                             }
 
                             tooltipText += xvalText + '<br/>';
 
-                            if (yAxisLabel != undefined)
+                            if (yAxisLabel !== undefined)
                             {
                                 tooltipText += "<strong>" + yAxisLabel + ": </strong>";
                             }
@@ -445,7 +447,7 @@ var barLineChart = function(param)
 
                             tooltip.transition()
                                 .duration(200)
-                                .style("opacity", .9)
+                                .style("opacity", 0.9)
                                 .style("border-color", lineColorCode);
                             tooltip.html(tooltipText)
                                 .style("left", (d3.event.offsetX) + "px")
@@ -527,7 +529,8 @@ var barLineChart = function(param)
          * @param data - parsed data from input json
          * @returns processed data
          */
-        setBarLineChartData(data)
+
+        setBarLineChartData : function(data)
         {
             var that = this;
 
@@ -565,7 +568,8 @@ var barLineChart = function(param)
                                 return memo + num;
                             },
                             0)
-                    }
+
+                    };
                 });
             }
             else if (data[0].breakdowntype == "YMD")
@@ -600,7 +604,8 @@ var barLineChart = function(param)
                                 return memo + num;
                             },
                             0)
-                    }
+
+                    };
                 });
             }
             else if (data[0].breakdowntype == "YW")
@@ -620,4 +625,4 @@ var barLineChart = function(param)
 
         }
     };
-}
+};
