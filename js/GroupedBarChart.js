@@ -164,17 +164,36 @@ var GroupedBarChart = function(param)
         console.log(data);
 
         svg.append("g").selectAll("g")
-            .data(mainCategories)
-            .enter().append("g")
-              .attr("transform", function(d) { return "translate(" + x0(d) + ",0)"; })
-            .selectAll("rect")
+          .data(mainCategories)
+          .enter().append("g")
+            .attr("transform", function(d) { return "translate(" + x0(d) + ",0)"; })
+          .selectAll("rect")
             .data(function(d){ return _.where(data, {xval: d});})
             .enter().append("rect")
               .attr("x", function(d) { return x1(d.name); })
-              .attr("y", function(d) { return y(d.yval); })
+              .attr("y", that.h)
               .attr("width", x1.rangeBand())
-              .attr("height", function(d) { return that.h - y(d.yval); })
-              .attr("fill", function(d, i) { return z(i); });
+              .attr("height", 0)
+              .attr("fill", function(d, i) { return z(i); })
+              // The transition produces a bouncing effect for the bar
+              .transition()
+                // Each bar will be delayed depending on its position in the graph
+                .delay(function(d, i) { return  _.indexOf(data, d) * 50;} )
+                .duration(150)
+                // Expand height first (bounce effect)
+                .attr('y', function(d) { return y(d.yval) - 50; })
+                .attr('height', function(d) { return (that.h - y(d.yval)) + 50 })
+                  .transition()
+                  .duration(150)
+                  // Lower the height after (bounce effect)
+                  .attr('y', function(d) { return y(d.yval) + 15; })
+                  .attr('height', function(d) { return that.h - y(d.yval) - 15; })
+                    .transition()
+                    .duration(150)
+                    // Turn back to original height
+                    .attr('y', function(d) { return y(d.yval); })
+                    .attr('height', function(d) { return that.h - y(d.yval); })
+
         }
     };
   };
