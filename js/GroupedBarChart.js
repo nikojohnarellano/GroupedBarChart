@@ -14,6 +14,19 @@
  *                              {number} bottom - bottom margin
  *                              {number} left - left margin
  */
+
+ d3.selection.prototype.moveToFront = function() {
+   return this.each(function(){
+     this.parentNode.appendChild(this);
+   });
+ };
+ $.fn.triggerSVGEvent = function(eventName) {
+  var event = document.createEvent('SVGEvents');
+  event.initEvent(eventName,true,true);
+  this[0].dispatchEvent(event);
+  return $(this);
+ };
+
 var GroupedBarChart = function(param)
 {
     var width = param.width;
@@ -35,6 +48,7 @@ var GroupedBarChart = function(param)
     var tooltip = d3.select(elem).append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+
     return {
         h: height - margin.top - margin.bottom,
         w: width - margin.left - margin.right,
@@ -168,7 +182,6 @@ var GroupedBarChart = function(param)
         console.log(data);
 
         /*Transitionn Functions*/
-
         /*Enter the data into the dom*/
 
         svg.append("g").selectAll("g")
@@ -184,7 +197,7 @@ var GroupedBarChart = function(param)
               .attr("height", 0)
               .attr("fill", function(d, i) { return c(i); })
               // The transition produces a bouncing effect for the bar
-              .transition("Bars")
+              .transition()
                 // Each bar will be delayed depending on its position in the graph
                 .delay(function(d, i) { return  _.indexOf(data, d) * 50;} )
                 .duration(150)
@@ -273,13 +286,24 @@ var GroupedBarChart = function(param)
                         .on('mouseover',c_mouseover)
                         .on('mouseout',c_mouseout)
                         .on('click',function(){console.log("cirle onlick");})
-                        .transition("Circles")
-                        .duration(1000)
-                        //.delay(function(d, i){return i * (1000 / (dataLength - 1));})
-                        .attr('r', 5)
-                        .attr("stroke-width", 2)
+                        .moveToFront()
                         .attr('cx', function(d) { return x0(d.x0) + x1(d.x1) + x1.rangeBand()/2;})
-                        .attr('cy', function (d) { return y(d.y); });
+                        .attr('cy', function (d) { return y(d.y); })
+                        .transition()
+                          //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
+                          // Each bar will be delayed depending on its position in the graph
+                          .duration(300)
+                          // Expand height first (bounce effect)
+                          .attr('r', 5)
+                          .attr("stroke-width", 2)
+                          .transition()
+                          .duration(300)
+                          // Lower the height after (bounce effect)
+                          .attr('cy', function (d) { return y(d.y) - 30; })
+                            // Turn back to original height
+                          .transition()
+                          .duration(300)
+                            .attr('cy', function (d) { return y(d.y);});
 
                     /*Line stuff.*/
 
