@@ -183,7 +183,7 @@ var GroupedBarChart = function(param)
 
         /*Transitionn Functions*/
         /*Enter the data into the dom*/
-
+        var barsAnimationTime = 1000;
         svg.append("g").selectAll("g")
           .data(mainCategories)
           .enter().append("g")
@@ -195,22 +195,22 @@ var GroupedBarChart = function(param)
               .attr("y", that.h)
               .attr("width", x1.rangeBand())
               .attr("height", 0)
-              .attr("fill", function(d, i) { return c(i); })
+              .attr("fill", function(d, i) { return c(_.indexOf(data, d)); })
               // The transition produces a bouncing effect for the bar
               .transition()
                 // Each bar will be delayed depending on its position in the graph
                 .delay(function(d, i) { return  _.indexOf(data, d) * 50;} )
-                .duration(150)
+                .duration(barsAnimationTime/3)
                 // Expand height first (bounce effect)
                 .attr('y', function(d) { return y(d.yval) - 50; })
                 .attr('height', function(d) { return (that.h - y(d.yval)) + 50 ;})
                   .transition()
-                  .duration(150)
+                  .duration(barsAnimationTime/3)
                   // Lower the height after (bounce effect)
                   .attr('y', function(d) { return y(d.yval) + 15; })
                   .attr('height', function(d) { return that.h - y(d.yval) - 15; })
                     .transition()
-                    .duration(150)
+                    .duration(barsAnimationTime/3)
                     // Turn back to original height
                     .attr('y', function(d) { return y(d.yval); })
                     .attr('height', function(d) { return that.h - y(d.yval); });
@@ -264,10 +264,11 @@ var GroupedBarChart = function(param)
                     }//end of functions
 
                     /*data point data*/
-
-                    var lineData = createLineData(_.pluck(_.where(data,{"name": "Total Average"}), "yval"),
+                    var circleAniminationTime = 500;
+                    var lineanimationTime = 1000;
+                    var lineData = createLineData(_.pluck(_.where(data,{name: "Total Average"}), "yval"),
                     mainCategories, subCategories);
-                    console.log("lineData : " + lineData.toString);
+                    console.log("lineData : " + JSON.stringify(lineData));
 
 
                     /*Data Point render*/
@@ -275,56 +276,80 @@ var GroupedBarChart = function(param)
                         .append("g")
                         .attr("class", "gline");
 
-                    var datapoints = gLine.selectAll("circle")
-                        .data(lineData)
-                        .enter().append("g");
+                      /*
+                    var path = gLine.selectAll("path")
+                    .data(lineData).enter()
+                    .append("path")
+                    .attr("d", that.addLine(lineData))
+                    .attr("class", "line")
+                    .attr('fill', "none")
+                    .attr("stroke-dashoffset", 0)
+                    .transition("Line")
+                    .delay(barsAnimationTime+circleAniminationTime)
+                    .duration(lineanimationTime)
+                    .attr("stroke-width", 2)
+                    .attr('stroke', function(d){
+                      var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                      return c(i);
+                    })
+                    .ease("linear");
+                    */
 
-                    datapoints.append("circle")
-                        .attr('class', 'dot')
-                        .attr('stroke', function(d, i) { return c(i); }/*chnage this later*/)
-                        .attr('stroke-width', "2")
-                        .on('mouseover',c_mouseover)
-                        .on('mouseout',c_mouseout)
-                        .on('click',function(){console.log("cirle onlick");})
-                        .moveToFront()
-                        .attr('cx', function(d) { return x0(d.x0) + x1(d.x1) + x1.rangeBand()/2;})
-                        .attr('cy', function (d) { return y(d.y); })
-                        .transition()
-                          //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
-                          // Each bar will be delayed depending on its position in the graph
-                          .duration(300)
-                          // Expand height first (bounce effect)
-                          .attr('r', 5)
-                          .attr("stroke-width", 2)
-                          .transition()
-                          .duration(300)
-                          // Lower the height after (bounce effect)
-                          .attr('cy', function (d) { return y(d.y) - 30; })
-                            // Turn back to original height
-                          .transition()
-                          .duration(300)
-                            .attr('cy', function (d) { return y(d.y);});
+
+
 
                     /*Line stuff.*/
-
                     var path = gLine.append("path")
-                        .attr("class", "line")
-                        .attr('stroke', function(d, i) { return c(i); })
-                        .attr('fill', "none")
-                        .attr("stroke-width", 2)
-                        .attr("d", that.addLine(lineData));
+                      .attr("class", "line")
+                      .attr('fill', "none")
+                      .attr("stroke-width", 2)
+                      .attr("d", that.addLine(lineData))
+                      .data(lineData);
 
                     var totalLength = path.node().getTotalLength();
-
                     path.attr("stroke-dasharray", totalLength + " " + totalLength)
                         .attr("stroke-dashoffset", totalLength)
                         .transition("Line")
-                        .duration(1000)
+                        .delay(barsAnimationTime+circleAniminationTime)
+                        .duration(lineanimationTime)
                         .attr("stroke-dashoffset", 0)
+                        .each(function (d, i){
+                          d3.select(this).attr('stroke', function(d){
+                            var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                            return c(i);
+                          });
+                        })
                         .ease("linear")
                         .attr("stroke-width", 2)
                         .attr("stroke-dashoffset", 0);
 
-                      }
+                      var datapoints = gLine.selectAll("circle")
+                          .data(lineData)
+                          .enter().append("circle")
+                          //.attr('class', 'dot')
+                          .attr('stroke', function(d, i){return "white";})
+                          .attr('stroke-width', "0.5")
+                          .on('mouseover',c_mouseover)
+                          .on('mouseout',c_mouseout)
+                          .on('click',function(){console.log("cirle onlick");})
+                          .attr('cx', function(d) { return x0(d.x0) + x1(d.x1) + x1.rangeBand()/2;})
+                          .attr('cy', function (d) { return y(d.y); })
+                          .attr("fill", function(d){
+                            var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                            return c(i);
+                          })
+                          .transition().delay(function(d, i) {return barsAnimationTime + 50 + (i * 50);})
+                            //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
+                            // Each bar will be delayed depending on its position in the graph
+                            .duration(circleAniminationTime/2)
+                            // Expand height first (bounce effect)
+                            .attr('r', 5)
+                            .attr('cy', function (d) { return y(d.y) - 30; })
+                            .transition()
+                            .duration(circleAniminationTime/2)
+                            // Lower the height after (bounce effect)
+                            .attr('cy', function (d) { return y(d.y);});
+                              // Turn back to original height
+                        }
     };
   };
