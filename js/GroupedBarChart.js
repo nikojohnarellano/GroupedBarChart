@@ -15,18 +15,6 @@
  *                              {number} left - left margin
  */
 
- d3.selection.prototype.moveToFront = function() {
-   return this.each(function(){
-     this.parentNode.appendChild(this);
-   });
- };
- $.fn.triggerSVGEvent = function(eventName) {
-  var event = document.createEvent('SVGEvents');
-  event.initEvent(eventName,true,true);
-  this[0].dispatchEvent(event);
-  return $(this);
- };
-
 var GroupedBarChart = function(param)
 {
     var width = param.width;
@@ -266,37 +254,19 @@ var GroupedBarChart = function(param)
                     /*data point data*/
                     var circleAniminationTime = 500;
                     var lineanimationTime = 1000;
-                    var lineData = createLineData(_.pluck(_.where(data,{name: "Total Average"}), "yval"),
-                    mainCategories, subCategories);
-                    console.log("lineData : " + JSON.stringify(lineData));
+                    var lineData = _.map(_.where(data, {name: "Total Average"}), function(d){
+                      return {
+                        x0: d.xval,
+                        x1: d.name,
+                        y:d.yval
+                      };
+                    });
 
 
                     /*Data Point render*/
                     var gLine = that.svg.call(responsivefy)
                         .append("g")
                         .attr("class", "gline");
-
-                      /*
-                    var path = gLine.selectAll("path")
-                    .data(lineData).enter()
-                    .append("path")
-                    .attr("d", that.addLine(lineData))
-                    .attr("class", "line")
-                    .attr('fill', "none")
-                    .attr("stroke-dashoffset", 0)
-                    .transition("Line")
-                    .delay(barsAnimationTime+circleAniminationTime)
-                    .duration(lineanimationTime)
-                    .attr("stroke-width", 2)
-                    .attr('stroke', function(d){
-                      var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
-                      return c(i);
-                    })
-                    .ease("linear");
-                    */
-
-
-
 
                     /*Line stuff.*/
                     var path = gLine.append("path")
