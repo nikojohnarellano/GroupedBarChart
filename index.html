@@ -47,9 +47,9 @@
     }
     var groupedBarChart = new GroupedBarChart(groupedBarParam);
 
-    d3.json("data/groupedbarstring.json", function(data) {
+    d3.json("data/groupedbaryw.json", function(data) {
 
-        //var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
+        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
 
         // Log groupedBarData to see if it's grouping the data in the right manner
         //console.log(groupedBarData);
@@ -61,7 +61,7 @@
           var yDom = d3.extent(barLineData, function(d) { return d.yval });
           var zDom = d3.extent(barLineData, function(d) { return d.zval });
 */
-          groupedBarChart.initChart(data);
+          groupedBarChart.initChart(groupedBarData);
 
           var lineColor = "#09aff3";
           var barColor = "#ffe159";

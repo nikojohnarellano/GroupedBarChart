@@ -42,6 +42,7 @@ var GroupedBarChart = function(param)
         w: width - margin.left - margin.right,
         svg: svg,
         xScale: null,
+        x1Scales : null,
         xAxis: null,
         yScale: null,
         yAxis: null,
@@ -63,67 +64,54 @@ var GroupedBarChart = function(param)
             var sort = data[0].breakdowntype !== "STRING";
             if (data[0].breakdowntype == "STRING")
             {
-                values = _.groupBy(_.map(data,
-                    function(d)
-                    {
-                      return {
-                        xval : d.xval,
-                        yval : d.yval,
-                        zval : d.zval,
-                        name : d.name
-                      };
-                    }),
-                  function(d)
-                  {
-                    return d.xval;
-                  });
+              values = _.map(data, function(d) {
+                var data_value = {};
+
+                data_value.xval = d.xval;
+                data_value.yval = d.yval;
+                data_value.name = d.name;
+
+                // Only add zval into the data object if there is a zval
+                if(d.zval !== undefined) {
+                  data_value.zval = d.zval;
+                }
+
+                return data_value;
+              });
             }
-            else if (data[0].breakdowntype == "YMD")
+            else if (data[0].breakdowntype == "YW")
             {
-                values = _.groupBy(_.map(data,
-                  function(d)
-                  {
-                    return {
-                      xval : that.toDate(d.xval).format("MMM DD YYYY"),
-                      yval : d.yval,
-                      zval : d.zval,
-                      name : d.name
-                    };
-                  }),
-                  function(d)
-                  {
-                    return d.xval;
-                  }  );
+              values = _.map(data, function(d) {
+                var data_value = {};
+
+                data_value.xval = that.toDate(d.xval).format("MMM DD YYYY");
+                data_value.yval = d.yval;
+                data_value.name = d.name;
+
+                // Only add zval into the data object if there is a zval
+                if(d.zval !== undefined) {
+                  data_value.zval = d.zval;
+                }
+
+                return data_value;
+              });
             }
             else if (data[0].breakdowntype == "YM")
             {
-              values = _.groupBy(_.map(data,
-                function(d)
-                {
-                  return {
-                    xval : that.toDate(d.xval).format("MMM DD"),
-                    yval : d.yval,
-                    zval : d.zval,
-                    name : d.name
-                  };
-                }),
-                function(d)
-                {
-                  return d.xval;
-                });
+
             }
             else
             {
               // Ask about YW
             }
-            return sort ? _.sortBy(values,
-                function(d)
-                {
-                    return that.toDate(d.xval) - 0;
-                }) : values;
+
+            return sort ? _.sortBy(values, function(d) {
+              return that.toDate(d.xval) - 0;
+            }) : values;
         },
         initChart : function(data) {
-          var that = this;
+          var that     = this;
+
           //get unique xvals from the data, these are the main categories. they make up the x0 domain
           //use pluck and unique
           var mainCategories = _.uniq(_.pluck(data, 'xval'));
@@ -146,6 +134,7 @@ var GroupedBarChart = function(param)
                   .domain(mainCategories.map(function(d){console.log(d); return d;}))
                   .rangeBands([0, that.w], 0.5);
           console.log(x0.range());
+
           var x1 = d3.scale.ordinal()
             .domain(subCategories.map(function(d,i){console.log(d); return d;}))
             .rangeBands([0, x0.rangeBand()]);
@@ -179,7 +168,7 @@ var GroupedBarChart = function(param)
           .selectAll("rect")
             .data(function(d){ return _.where(data, {xval: d});})
             .enter().append("rect")
-              .attr("x", function(d) { return x1(d.name); })
+              .attr("x", function(d, i) { return x1(d.name); })
               .attr("y", that.h)
               .attr("width", x1.rangeBand())
               .attr("height", 0)
@@ -320,6 +309,28 @@ var GroupedBarChart = function(param)
                             // Lower the height after (bounce effect)
                             .attr('cy', function (d) { return y(d.y);});
                               // Turn back to original height
-                        }
+
+        },
+        /**
+         * Checks if a string represents a date
+         * @param {string} the string to check
+         * @returns {bool} whether the string is a date or not
+         */
+        isDate: function(data)
+        {
+            var dateFormat = "MMM-DD-YYYY";
+            return moment(data, dateFormat, false).isValid();
+        },
+
+        /**
+         * Returns a date object for a string
+         * @param {string} the string to get a date for
+         * @returns {object} a date object representing the string
+         */
+        toDate: function(date)
+        {
+            var dateFormat = "MMM-DD-YYYY";
+            return moment(date, dateFormat, false);
+        }
     };
   };
