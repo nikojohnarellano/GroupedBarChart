@@ -12,4 +12,8 @@
   {"id":0,"type":132,"xval":"Sep 10","yval":68.4233,"name":"Total Average","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135,"zval":1190},
   {"id":1,"type":132,"xval":"Sep 10","yval":64.82,"name":"Solution A","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135},
   {"id":2,"type":132,"xval":"Sep 10","yval":62.26,"name":"Solution B","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135},
-  {"id":3,"type":132,"xval":"Sep 10","yval":78.19,"name":"Solution C","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135}]
+  {"id":3,"type":132,"xval":"Sep 10","yval":78.19,"name":"Solution C","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135},
+  {"id":0,"type":132,"xval":"Sep 10","yval":68.4233,"name":"Solution D","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135,"zval":1190},
+  {"id":1,"type":132,"xval":"Sep 10","yval":64.82,"name":"Solution E","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135},
+  {"id":2,"type":132,"xval":"Sep 10","yval":62.26,"name":"Solution F","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135},
+  {"id":3,"type":132,"xval":"Sep 10","yval":78.19,"name":"Solution G","breakdown":"1637","breakdowntype":"YW","parentrefid":163,"parentreftype":135}]

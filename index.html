@@ -47,28 +47,11 @@
     }
     var groupedBarChart = new GroupedBarChart(groupedBarParam);
 
-    d3.json("data/groupedbaryw.json", function(data) {
-
+    d3.json("data/groupedbarstring.json", function(data) {
         var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
 
-        // Log groupedBarData to see if it's grouping the data in the right manner
-        //console.log(groupedBarData);
-
-        /*
-          THESE WONT WORK FOR NOW SINCE WE DONT HAVE THESE METHODS YET IN groupedBarChart.js
-
-          var xDom = d3.extent(barLineData, function(d) { return d.xval });
-          var yDom = d3.extent(barLineData, function(d) { return d.yval });
-          var zDom = d3.extent(barLineData, function(d) { return d.zval });
-*/
-          groupedBarChart.initChart(groupedBarData);
-
-          var lineColor = "#09aff3";
-          var barColor = "#ffe159";
-
-          //groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
-
-
+        groupedBarChart.initChart(groupedBarData);
+        groupedBarChart.updateChart(groupedBarData);
     });
 
     // TODO This doesn't output anything to the console. Need to ask Jose about the YW breakdown type.
