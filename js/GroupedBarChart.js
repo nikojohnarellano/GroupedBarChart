@@ -116,8 +116,10 @@ var GroupedBarChart = function(param)
         setGroupedBarChartData : function(data)
         {
             var values;
-            var that = this;
-            var sort = data[0].breakdowntype !== "STRING";
+            var that        = this;
+            var isValidData = (data[0].breakdowntype === "STRING" || data[0].breakdowntype === "YMD" || data[0].breakdowntype === "YM" || data[0].breakdowntype === "YW");
+            var isDateData  = isValidData && data[0].breakdowntype !== "STRING";
+
             if (data[0].breakdowntype == "STRING")
             {
               values = _.map(data, function(d) {
@@ -161,7 +163,7 @@ var GroupedBarChart = function(param)
               // Ask about YW
             }
 
-            return sort ? _.sortBy(values, function(d) {
+            return isDateData ? _.sortBy(values, function(d) {
               return that.toDate(d.xval) - 0;
             }) : values;
         },
