@@ -49,8 +49,8 @@
 
     d3.json("data/groupedbarstring.json", function(data) {
         var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
-
-        groupedBarChart.initChart(groupedBarData);
+        var precision = 0;
+        groupedBarChart.initChart(groupedBarData, precision);
         groupedBarChart.updateChart(groupedBarData);
     });
 
