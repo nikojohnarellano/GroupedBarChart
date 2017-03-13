@@ -286,6 +286,23 @@ var GroupedBarChart = function(param)
 
             /*Data point funcitons*/
             var c_mouseover = function(d){
+              var mouseContainer = d3.select(elem + " svg");
+              var mouseCoords    = d3.mouse(mouseContainer.node());
+              var ballToolTipText = '';
+              if (d.x1)
+                  ballToolTipText = "<strong>" + d.x1 + "</strong>";
+              if (d.y)
+                  ballToolTipText +=  "<br>Score: <strong>" + d.y.toFixed(that.precision)  + "</strong>";
+              tooltip.transition()
+                  .duration(200)
+                  .style("opacity", 1)
+                  //.style("border-color", barColorCode);
+              tooltip.html(ballToolTipText)
+                  .style("border-color", d3.select(this).attr("fill"))
+                  .style("background-color", "#FFFFFF")
+                  .style("left", (mouseCoords[0]) + "px")
+                  .style("top",  (mouseCoords[1]) - 50 + "px");
+                  ;
                 d3.select(this)
                     .classed('hover', true)
                     .transition()
@@ -297,6 +314,9 @@ var GroupedBarChart = function(param)
             };
 
             var c_mouseout = function(d){
+                tooltip.transition()
+                    .duration(200)
+                    .style("opacity", 0);
                 d3.select(this)
                     .classed('hover', false)
                     .transition()
