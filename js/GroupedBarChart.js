@@ -64,7 +64,7 @@ var GroupedBarChart = function(param)
          * Set the scales for the chart based on the data and it's domain
          * @param data - parsed data from the input json
          */
-        setScales: function(data)
+        setScales: function(data, applicationColors)
         {
             var that = this;
 
@@ -111,8 +111,7 @@ var GroupedBarChart = function(param)
                 .scale(that.yScale)
                 .orient("left")
             ;
-
-            that.colors = d3.scale.category20c();
+            that.colors = applicationColors;
         },
 
         /**
@@ -174,9 +173,9 @@ var GroupedBarChart = function(param)
          * Initializes the chart. Sets the scales and generates the axes and grid lines.
          * @param data - parsed data from the input json
          */
-        initChart : function(data, precision) {
+        initChart : function(data, precision, applicationColors) {
             var that = this;
-            that.setScales(data);
+            that.setScales(data,applicationColors);
             that.precision = precision;
 
             svg.append("g")
@@ -197,6 +196,29 @@ var GroupedBarChart = function(param)
         updateChart : function(data)
         {
             var that = this;
+            that.colors = _.shuffle(that.colors);
+            //Lighten Darken Function by Chris Coyier
+            function lightenDarkenColor(col, amt) {
+              var usePound = false;
+              if(amt===0){
+                return col;
+              }
+              if (col[0] == "#") {
+                  col = col.slice(1);
+                  usePound = true;
+              }
+              var num = parseInt(col,16);
+              var r = (num >> 16) + amt;
+              if (r > 255) r = 255;
+              else if  (r < 0) r = 0;
+              var b = ((num >> 8) & 0x00FF) + amt;
+              if (b > 255) b = 255;
+              else if  (b < 0) b = 0;
+              var g = (num & 0x0000FF) + amt;
+              if (g > 255) g = 255;
+              else if (g < 0) g = 0;
+              return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+          }
 
             var tooltip_mouseover = function(d) {
                 var tooltipText = '';
@@ -259,7 +281,7 @@ var GroupedBarChart = function(param)
                 .attr("y", that.h)
                 .attr("width", function(d) { var x1 = (_.findWhere(that.x1Scales, { mainCategory : d.xval})).x1Scale; return x1.rangeBand(); } )
                 .attr("height", 0)
-                .attr("fill", function(d, i) { return that.colors(_.indexOf(data, d)); })
+                .attr("fill", function(d, i) { console.log(i);console.log(_.indexOf(that.mainCategories, d.xval));return lightenDarkenColor(that.colors[_.indexOf(that.mainCategories, d.xval )], i*20); })
                 .on('mouseover',tooltip_mouseover)
                 .on('mousemove',tooltip_mousemove)
                 .on('mouseout',tooltip_mouseout)
@@ -370,7 +392,7 @@ var GroupedBarChart = function(param)
                 .attr("d", that.addLine(lineData))
                 .data(lineData)
             ;
-
+            /*As an object, this is one solid line, so cannot be multicolored.*/
             var totalLength = path.node().getTotalLength();
             path.attr("stroke-dasharray", totalLength + " " + totalLength)
                 .attr("stroke-dashoffset", totalLength)
@@ -378,12 +400,7 @@ var GroupedBarChart = function(param)
                 .delay(barsAnimationTime+circleAniminationTime)
                 .duration(lineanimationTime)
                 .attr("stroke-dashoffset", 0)
-                .each(function (d, i) {
-                    d3.select(this).attr('stroke', function(d){
-                        var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
-                        return that.colors(i);
-                    });
-                })
+                .attr('stroke', that.colors[0])
                 .ease("linear")
                 .attr("stroke-width", 2)
                 .attr("stroke-dashoffset", 0)
@@ -405,9 +422,9 @@ var GroupedBarChart = function(param)
                     return x1.range().length  < that.maxSubCategoryLength ? (outerPadding + that.xScale(d.x0) + x1.rangeBand()/2) : that.xScale(d.x0) + x1.rangeBand()/2;
                 })
                 .attr('cy', function (d) { return that.yScale(d.y); })
-                .attr("fill", function(d){
-                    var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
-                    return that.colors(i);
+                .attr("fill", function(d, i){
+                    //var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                    return that.colors[i];
                 })
                 .transition().delay(function(d, i) {return barsAnimationTime + 50 + (i * 50);})
                 //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
