@@ -64,7 +64,7 @@ var GroupedBarChart = function(param)
          * Set the scales for the chart based on the data and it's domain
          * @param data - parsed data from the input json
          */
-        setScales: function(data)
+        setScales: function(data, applicationColors)
         {
             var that = this;
 
@@ -100,8 +100,16 @@ var GroupedBarChart = function(param)
                         .domain(subCategory.subCategories)
                         .rangeBands([0, that.xScale.rangeBand() * factor]),
                     mainCategory : subCategory.mainCategory
-                }
+                };
             });
+
+            /*ZScale for Volume Measurement. The max vuloume Score
+            is the maximum value rounded up to the nearest 1000*/
+            function roundx(n, x){ return Math.ceil(n/x)*x;}
+            that.zScale = d3.scale.linear()
+                .domain([0, roundx(_.max(_.pluck(data, 'zval')),1000)+1])
+                .range([that.h, 0])
+            ;
 
             that.xAxis  = d3.svg.axis()
                 .scale(that.xScale)
@@ -111,8 +119,13 @@ var GroupedBarChart = function(param)
                 .scale(that.yScale)
                 .orient("left")
             ;
+            that.zAxis  = d3.svg.axis()
+                .scale(that.zScale)
+                .orient("right")
+            ;
 
-            that.colors = d3.scale.category20c();
+            /*Any array of colors, injected from the index currently*/
+            that.colors = applicationColors;
         },
 
         /**
@@ -174,9 +187,9 @@ var GroupedBarChart = function(param)
          * Initializes the chart. Sets the scales and generates the axes and grid lines.
          * @param data - parsed data from the input json
          */
-        initChart : function(data, precision) {
+        initChart : function(data, precision, applicationColors) {
             var that = this;
-            that.setScales(data);
+            that.setScales(data,applicationColors);
             that.precision = precision;
 
             svg.append("g")
@@ -189,6 +202,11 @@ var GroupedBarChart = function(param)
                 .attr("transform", "translate(0," + that.h + ")")
                 .call(that.xAxis)
             ;
+            svg.append("g")
+                .attr("class", "z axis")
+                .attr("transform", "translate(" + that.w +",0)")
+                .call(that.zAxis)
+            ;
         },
         /**
          * Updates the chart based on the data passed in.
@@ -198,7 +216,46 @@ var GroupedBarChart = function(param)
         {
             var that = this;
 
+            /*Color array is randomized on each refresh*/
+            that.colors = _.shuffle(that.colors);
+
+            //Lighten Darken Function by Chris Coyier
+            //Used to lighten the colors of each group from left to right
+            function lightenDarkenColor(col, amt) {
+              var usePound = false;
+              if (col[0] == "#") {
+                  col = col.slice(1);
+                  usePound = true;
+              }
+              var num = parseInt(col,16);
+              var r = (num >> 16) + amt;
+              if (r > 255) r = 255;
+              else if  (r < 0) r = 0;
+              var b = ((num >> 8) & 0x00FF) + amt;
+              if (b > 255) b = 255;
+              else if  (b < 0) b = 0;
+              var g = (num & 0x0000FF) + amt;
+              if (g > 255) g = 255;
+              else if (g < 0) g = 0;
+              /*Fixed Lighten algorithm, was truncating hexes randomly.*/
+              var result = "000000" + (g | (b << 8) | (r << 16)).toString(16);
+              result = result.substr(-6);
+              result = (usePound?"#":"") + result;
+              return result;
+            }
+
+
+
+            /*The amount that bars are darkened on Mouseover*/
+            var mouseOverDarken = -30;
+            /*Reverses the effect of the darken on mouseout*/
+            var mouseOverReverse = -1 * mouseOverDarken;
+
             var tooltip_mouseover = function(d) {
+                /*Select the bar that calls mouseover and darkens the bar*/
+                var bar = d3.select(this);
+                bar.attr("fill", lightenDarkenColor(bar.attr("fill"), mouseOverDarken));
+
                 var tooltipText = '';
                 if (d.name)
                     tooltipText = "<strong>" + d.name + "</strong>";
@@ -211,7 +268,7 @@ var GroupedBarChart = function(param)
 
                 tooltip.transition()
                     .duration(200)
-                    .style("opacity", 1)
+                    .style("opacity", 1);
                     //.style("border-color", barColorCode);
                 tooltip.html(tooltipText)
                     .style("border-color", d3.select(this).attr("fill"))
@@ -234,10 +291,14 @@ var GroupedBarChart = function(param)
 
             var tooltip_mouseout = function()
             {
-                tooltip.transition()
-                    .duration(200)
-                    .style("opacity", 0);
-            }
+              /*Select the bar that calls mouseout and reverse the darken effect*/
+              var bar = d3.select(this);
+              bar.attr("fill", lightenDarkenColor(bar.attr("fill"), mouseOverReverse));
+
+              tooltip.transition()
+                  .duration(200)
+                  .style("opacity", 0);
+            };
 
 
             /* Transition Functions */
@@ -259,7 +320,9 @@ var GroupedBarChart = function(param)
                 .attr("y", that.h)
                 .attr("width", function(d) { var x1 = (_.findWhere(that.x1Scales, { mainCategory : d.xval})).x1Scale; return x1.rangeBand(); } )
                 .attr("height", 0)
-                .attr("fill", function(d, i) { return that.colors(_.indexOf(data, d)); })
+                .attr("fill", function(d, i) { return lightenDarkenColor(that.colors[_.indexOf(that.mainCategories, d.xval )], i*15); })
+                //disable pointer events.
+                .style("pointer-events", "none")
                 .on('mouseover',tooltip_mouseover)
                 .on('mousemove',tooltip_mousemove)
                 .on('mouseout',tooltip_mouseout)
@@ -281,6 +344,8 @@ var GroupedBarChart = function(param)
                 // Turn back to original height
                 .attr('y', function(d) { return that.yScale(d.yval); })
                 .attr('height', function(d) { return that.h - that.yScale(d.yval); })
+                //allow pointer events after animation is finished
+                .style("pointer-events", "")
             ;
 
 
@@ -293,16 +358,18 @@ var GroupedBarChart = function(param)
                   ballToolTipText = "<strong>" + d.x1 + "</strong>";
               if (d.y)
                   ballToolTipText +=  "<br>Score: <strong>" + d.y.toFixed(that.precision)  + "</strong>";
+              if (d.z)
+                  ballToolTipText +=  "<br>Volume: <strong>" + d.z.toFixed(that.precision)  + "</strong>";
               tooltip.transition()
                   .duration(200)
-                  .style("opacity", 1)
+                  .style("opacity", 1);
                   //.style("border-color", barColorCode);
               tooltip.html(ballToolTipText)
                   .style("border-color", d3.select(this).attr("fill"))
                   .style("background-color", "#FFFFFF")
                   .style("left", (mouseCoords[0]) + "px")
-                  .style("top",  (mouseCoords[1]) - 50 + "px");
-                  ;
+                  .style("top",  (mouseCoords[1]) - 50 + "px")
+                ;
                 d3.select(this)
                     .classed('hover', true)
                     .transition()
@@ -325,7 +392,7 @@ var GroupedBarChart = function(param)
             };
 
 
-            that.addLine = d3.svg.line()
+            that.addYLine = d3.svg.line()
                 .x(
                     function(d)
                     {
@@ -348,7 +415,7 @@ var GroupedBarChart = function(param)
             /*data point data*/
             var circleAniminationTime = 500;
             var lineanimationTime = 1000;
-            var lineData = _.map(_.where(data, {name: "Total Average"}), function(d){
+            var ylineData = _.map(_.where(data, {name: "Total Average"}), function(d){
                 return {
                     x0: d.xval,
                     x1: d.name,
@@ -357,44 +424,41 @@ var GroupedBarChart = function(param)
             });
 
             /*Data Point render*/
-            var gLine = that.svg.call(responsivefy)
+            var yLine = that.svg.call(responsivefy)
                 .append("g")
-                .attr("class", "gline")
+                .attr("class", "yLine")
             ;
 
             /*Line stuff.*/
-            var path = gLine.append("path")
+            var yPath = yLine.append("path")
                 .attr("class", "line")
                 .attr('fill', "none")
                 .attr("stroke-width", 2)
-                .attr("d", that.addLine(lineData))
-                .data(lineData)
+                .attr("d", that.addYLine(ylineData))
+                .data(ylineData)
             ;
-
-            var totalLength = path.node().getTotalLength();
-            path.attr("stroke-dasharray", totalLength + " " + totalLength)
+            /*As an object, this is one solid line, so cannot be multicolored.*/
+            var totalLength = yPath.node().getTotalLength();
+            yPath.attr("stroke-dasharray", totalLength + " " + totalLength)
                 .attr("stroke-dashoffset", totalLength)
-                .transition("Line")
+                .transition()
                 .delay(barsAnimationTime+circleAniminationTime)
                 .duration(lineanimationTime)
                 .attr("stroke-dashoffset", 0)
-                .each(function (d, i) {
-                    d3.select(this).attr('stroke', function(d){
-                        var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
-                        return that.colors(i);
-                    });
-                })
+                .attr('stroke', that.colors[that.colors.length-2])
                 .ease("linear")
                 .attr("stroke-width", 2)
                 .attr("stroke-dashoffset", 0)
             ;
 
-            var datapoints = gLine.selectAll("circle")
-                .data(lineData)
+            var yDatapoints = yLine.selectAll("circle")
+                .data(ylineData)
                 .enter().append("circle")
                 //.attr('class', 'dot')
                 .attr('stroke', function(d, i){return "white";})
                 .attr('stroke-width', "0.5")
+                /*Disable pointer events*/
+                .style("pointer-events", "none")
                 .on('mouseover',c_mouseover)
                 .on('mouseout',c_mouseout)
                 .on('click',function(){console.log("cirle onlick");})
@@ -405,9 +469,9 @@ var GroupedBarChart = function(param)
                     return x1.range().length  < that.maxSubCategoryLength ? (outerPadding + that.xScale(d.x0) + x1.rangeBand()/2) : that.xScale(d.x0) + x1.rangeBand()/2;
                 })
                 .attr('cy', function (d) { return that.yScale(d.y); })
-                .attr("fill", function(d){
-                    var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
-                    return that.colors(i);
+                .attr("fill", function(d, i){
+                    //var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                    return that.colors[i];
                 })
                 .transition().delay(function(d, i) {return barsAnimationTime + 50 + (i * 50);})
                 //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
@@ -421,6 +485,102 @@ var GroupedBarChart = function(param)
                 // Lower the height after (bounce effect)
                 .attr('cy', function (d) { return that.yScale(d.y);})
                 // Turn back to original height
+                /*Allow pointer events at end of animation*/
+                .style("pointer-events", "")
+            ;
+
+            that.addZLine = d3.svg.line()
+                .x(
+                    function(d)
+                    {
+                        var x1                  = (_.findWhere(that.x1Scales, { mainCategory : d.x0})).x1Scale;
+                        var subCategoriesLength = (_.findWhere(that.subCategories, {mainCategory : d.x0})).subCategories.length;
+                        var outerPadding        = (that.xScale.rangeBand() - (subCategoriesLength * x1.rangeBand()))/2;
+
+                        return x1.range().length  < that.maxSubCategoryLength ? (outerPadding + that.xScale(d.x0) + x1.rangeBand()/2) : outerPadding + that.xScale(d.x0) + x1.rangeBand()/2;
+                    }
+                )
+                .y(
+                    function(d)
+                    {
+                        return that.zScale(d.z);
+                    }
+                )
+            ;
+
+
+            /*Z data point data*/
+            /*Get all data elemets that have a z value*/
+            var zlineData = _.map(_.filter(data, function(d){ return d.hasOwnProperty("zval");}), function(d){
+                return {
+                    x0: d.xval,
+                    x1: d.name,
+                    z: d.zval
+                };
+            });
+            console.log(zlineData);
+
+            /*Data Point render*/
+            var zLine = that.svg.call(responsivefy)
+                .append("g")
+                .attr("class", "zLine")
+            ;
+
+            /*Z Path*/
+            var zPath = zLine.append("path")
+                .attr("class", "line")
+                .attr('fill', "none")
+                .attr("stroke-width", 2)
+                .attr("d", that.addZLine(zlineData))
+                .data(zlineData)
+            ;
+            /*As an object, this is one solid line, so cannot be multicolored.*/
+            var totalLengthZ = zPath.node().getTotalLength();
+
+            zPath.attr("stroke-dasharray", totalLengthZ + " " + totalLengthZ)
+                .attr("stroke-dashoffset", totalLengthZ)
+                .transition()
+                .delay((barsAnimationTime+circleAniminationTime)*2)
+                .duration(lineanimationTime)
+                .attr("stroke-dashoffset", 0)
+                .attr('stroke', that.colors[that.colors.length-1])
+                .ease("linear")
+                .attr("stroke-width", 2)
+                .attr("stroke-dashoffset", 0)
+            ;
+
+            var zDatapoints = zLine.selectAll("circle")
+                .data(zlineData)
+                .enter().append("circle")
+                /*Disable pointer events*/
+                .style("pointer-events", "none")
+                .attr('stroke', function(d, i){return "white";})
+                .attr('stroke-width', "0.5")
+                .on('mouseover',c_mouseover)
+                .on('mouseout',c_mouseout)
+                .on('click',function(){console.log("cirle onlick");})
+                .attr('cx', function(d) {
+                    var x1                  = (_.findWhere(that.x1Scales, { mainCategory : d.x0})).x1Scale;
+                    var subCategoriesLength = (_.findWhere(that.subCategories, {mainCategory : d.x0})).subCategories.length;
+                    var outerPadding        = (that.xScale.rangeBand() - (subCategoriesLength * x1.rangeBand()))/2;
+                    return x1.range().length  < that.maxSubCategoryLength ? (outerPadding + that.xScale(d.x0) + x1.rangeBand()/2) : that.xScale(d.x0) + x1.rangeBand()/2;
+                })
+                .attr('cy', function (d) { return that.zScale(d.z); })
+                .attr("fill", function(d, i){
+                    //var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
+                    return that.colors[that.colors.length-2];
+                })
+                .transition().delay(function(d, i) {return circleAniminationTime+(barsAnimationTime*2) + 50 + (i * 50);})
+                // Expand height first (bounce effect)
+                .duration(circleAniminationTime/2)
+                .attr('r', 5)
+                .attr('cy', function (d) { return that.zScale(d.z) - 30; })
+                .transition()
+                .duration(circleAniminationTime/2)
+                // Lower the height after (bounce effect)
+                .attr('cy', function (d) { return that.zScale(d.z);})
+                // Turn back to original height
+                .style("pointer-events", "")
             ;
         },
         /**

@@ -33,7 +33,7 @@
 	<div id="clickInfo"></div>
 
     <script>
-
+    var applicationColors = [ "#F5A623", "#00ADF3", "#00975E", "#AE53C0", "#FF7152", "#D22F43", "#50E3C2", "#FFD92F", "#A0E254", "#550000", "#E55F95", "#AA3939", "#304E0E", "#4745FF", "#6900C4" ];
     var groupedBarParam = {
         width: $("#barLineChart").width(),
         height: 500,
@@ -50,7 +50,7 @@
     d3.json("data/groupedbarstring.json", function(data) {
         var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
         var precision = 0;
-        groupedBarChart.initChart(groupedBarData, precision);
+        groupedBarChart.initChart(groupedBarData, precision, applicationColors);
         groupedBarChart.updateChart(groupedBarData);
     });
 
