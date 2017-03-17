@@ -322,10 +322,10 @@ var GroupedBarChart = function(param)
                 .attr("height", 0)
                 .attr("fill", function(d, i) { return lightenDarkenColor(that.colors[_.indexOf(that.mainCategories, d.xval )], i*15); })
                 //disable pointer events.
-                .style("pointer-events", "none")
                 .on('mouseover',tooltip_mouseover)
                 .on('mousemove',tooltip_mousemove)
                 .on('mouseout',tooltip_mouseout)
+                .style("pointer-events", "none")
                 // The transition produces a bouncing effect for the bar
                 .transition()
                 // Each bar will be delayed depending on its position in the graph
@@ -347,6 +347,7 @@ var GroupedBarChart = function(param)
                 //allow pointer events after animation is finished
                 .style("pointer-events", "")
             ;
+
 
 
             /*Data point funcitons*/
@@ -458,10 +459,8 @@ var GroupedBarChart = function(param)
                 .attr('stroke', function(d, i){return "white";})
                 .attr('stroke-width', "0.5")
                 /*Disable pointer events*/
-                .style("pointer-events", "none")
                 .on('mouseover',c_mouseover)
                 .on('mouseout',c_mouseout)
-                .on('click',function(){console.log("cirle onlick");})
                 .attr('cx', function(d) {
                     var x1                  = (_.findWhere(that.x1Scales, { mainCategory : d.x0})).x1Scale;
                     var subCategoriesLength = (_.findWhere(that.subCategories, {mainCategory : d.x0})).subCategories.length;
@@ -473,6 +472,7 @@ var GroupedBarChart = function(param)
                     //var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
                     return that.colors[i];
                 })
+                .style("pointer-events", "none")
                 .transition().delay(function(d, i) {return barsAnimationTime + 50 + (i * 50);})
                 //.delay(function(d, i){return i * (1000 / (dataLength - 1));}
                 // Each bar will be delayed depending on its position in the graph
@@ -486,7 +486,9 @@ var GroupedBarChart = function(param)
                 .attr('cy', function (d) { return that.yScale(d.y);})
                 // Turn back to original height
                 /*Allow pointer events at end of animation*/
-                .style("pointer-events", "")
+                .each("end", function(){
+                  d3.select(this).style("pointer-events", "");
+                })
             ;
 
             that.addZLine = d3.svg.line()
@@ -553,7 +555,6 @@ var GroupedBarChart = function(param)
                 .data(zlineData)
                 .enter().append("circle")
                 /*Disable pointer events*/
-                .style("pointer-events", "none")
                 .attr('stroke', function(d, i){return "white";})
                 .attr('stroke-width', "0.5")
                 .on('mouseover',c_mouseover)
@@ -570,6 +571,7 @@ var GroupedBarChart = function(param)
                     //var i =_.indexOf(data, _.findWhere(data,{xval:d.x0, name:d.x1 }));
                     return that.colors[that.colors.length-2];
                 })
+                .style("pointer-events", "none")
                 .transition().delay(function(d, i) {return circleAniminationTime+(barsAnimationTime*2) + 50 + (i * 50);})
                 // Expand height first (bounce effect)
                 .duration(circleAniminationTime/2)
@@ -580,7 +582,9 @@ var GroupedBarChart = function(param)
                 // Lower the height after (bounce effect)
                 .attr('cy', function (d) { return that.zScale(d.z);})
                 // Turn back to original height
-                .style("pointer-events", "")
+                .each("end", function(){
+                  d3.select(this).style("pointer-events", "");
+                })
             ;
         },
         /**
