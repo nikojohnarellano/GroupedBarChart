@@ -309,6 +309,7 @@ var GroupedBarChart = function(param)
 
             /* Transition Functions */
             /* Enter the data into the dom */
+            /*Hello from Morris*/
             var barsAnimationTime = 1000;
             svg.append("g").selectAll("g")
                 .data(that.mainCategories)
