@@ -155,10 +155,9 @@ var GroupedBarChart = function(param)
                     }
 
                     return data_value;
-              });
+                });
 
             } else if (data[0].breakdowntype == "YW") {
-
                 values = _.map(data, function(d) {
                     var data_value = {};
                     data_value.xval = that.toDate(d.xval).format("MMM DD YYYY");
@@ -183,11 +182,19 @@ var GroupedBarChart = function(param)
                 }) : values;
         },
 
+        // Deletes the current chart, used for switching datasets
+        deleteChart: function(){
+            this.svg.selectAll('g').each(function () {
+                $(this).remove();
+            });
+        },
+
         /**
          * Initializes the chart. Sets the scales and generates the axes and grid lines.
          * @param data - parsed data from the input json
          */
         initChart : function(data, precision, applicationColors) {
+            this.deleteChart();
             var that = this;
             that.setScales(data,applicationColors);
             that.precision = precision;
@@ -218,7 +225,6 @@ var GroupedBarChart = function(param)
 
             /*Color array is randomized on each refresh*/
             that.colors = _.shuffle(that.colors);
-
             //Lighten Darken Function by Chris Coyier
             //Used to lighten the colors of each group from left to right
             function lightenDarkenColor(col, amt) {
