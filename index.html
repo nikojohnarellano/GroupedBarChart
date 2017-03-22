@@ -26,13 +26,18 @@
             </div>
         </div>
     </div>
-    <p class="clickUpdate"> Click to show dataset #1 <b>(breakdown by YM)</b></p>
-    <p class="clickUpdate2"> Click to show dataset #2 <b>(breakdown by YMD)</b></p>
-    <p class="clickUpdate3"> Click to show dataset #3 </p>
+
+    <button id="StringButton"> Dataset #1 (string) </button></p>
+    <button id="DateButton">Dataset #2 (date) </button></p>
 	<br>
 	<div id="clickInfo"></div>
 
     <script>
+    // On load use string dataset
+    window.onload = renderStringDataset;
+    // Set buttons
+    document.getElementById("StringButton").onclick = renderStringDataset;
+    document.getElementById("DateButton").onclick = renderDateDataset;
     var applicationColors = [ "#F5A623", "#00ADF3", "#00975E", "#AE53C0", "#FF7152", "#D22F43", "#50E3C2", "#FFD92F", "#A0E254", "#550000", "#E55F95", "#AA3939", "#304E0E", "#4745FF", "#6900C4" ];
     var groupedBarParam = {
         width: $("#barLineChart").width(),
@@ -47,38 +52,26 @@
     }
     var groupedBarChart = new GroupedBarChart(groupedBarParam);
 
-    d3.json("data/groupedbarstring.json", function(data) {
-        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
-        var precision = 0;
-        groupedBarChart.initChart(groupedBarData, precision, applicationColors);
-        groupedBarChart.updateChart(groupedBarData);
-    });
+    function renderStringDataset() {
+        d3.json("data/groupedbarstring.json", function(data) {
+            var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
+            var precision = 0;
+            groupedBarChart.initChart(groupedBarData, precision, applicationColors);
+            groupedBarChart.updateChart(groupedBarData);
+        });
+    }
 
-    // TODO This doesn't output anything to the console. Need to ask Jose about the YW breakdown type.
-    d3.json("data/groupedbaryw.json", function(data) {
+    function renderDateDataset() {
+        d3.json("data/groupedbaryw.json", function(data) {
+            var groupedBarData =  groupedBarChart.setGroupedBarChartData(data);
+            var precision = 0;
+            // Log groupedBarData to see if it's grouping the data in the right manner
+            console.log(groupedBarData);
 
-        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
-
-        // Log groupedBarData to see if it's grouping the data in the right manner
-        console.log(groupedBarData);
-
-        /*
-          THESE WONT WORK FOR NOW SINCE WE DONT HAVE THESE METHODS YET IN groupedBarChart.js
-
-          var xDom = d3.extent(barLineData, function(d) { return d.xval });
-          var yDom = d3.extent(barLineData, function(d) { return d.yval });
-          var zDom = d3.extent(barLineData, function(d) { return d.zval });
-
-          groupedBarChart.initChart(xDom, yDom, zDom, groupedBarData);
-
-          var lineColor = "#09aff3";
-          var barColor = "#ffe159";
-
-          groupedBarChart.updateChart(groupedBarData, lineColor, barColor);
-        */
-
-    });
-
+            groupedBarChart.initChart(groupedBarData, precision, applicationColors);
+            groupedBarChart.updateChart(groupedBarData);
+        });
+    }
     </script>
 
 </body>
