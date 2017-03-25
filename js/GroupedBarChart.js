@@ -25,6 +25,8 @@ var GroupedBarChart = function(param)
     var yAxisLabel = param.yAxisLabel;
     var zAxisLabel = param.zAxisLabel;
     var tooltipTitle = param.tooltipTitle;
+    var maxGroup = 100;
+    var maxBars  = 15;
     var margin = { top: 57, right: 57, bottom: 57, left: 57 };
     var svg = d3.select(elem)
         .append('svg')
@@ -68,14 +70,11 @@ var GroupedBarChart = function(param)
         {
             var that = this;
 
-            /*
-            *
-            */
-            that.mainCategories       = _.uniq(_.pluck(data, 'xval'));
+            that.mainCategories = _.first(_.uniq(_.pluck(data, 'xval')), maxGroup);
             that.subCategories  = _.map(that.mainCategories, category => {
                 return  {
                     mainCategory  : category,
-                    subCategories : _.pluck(_.where(data, { xval : category }), 'name')
+                    subCategories : _.first(_.pluck(_.where(data, { xval : category }), 'name'), maxBars)
                 };
             });
 
@@ -157,8 +156,21 @@ var GroupedBarChart = function(param)
                     return data_value;
                 });
 
-            } else if (data[0].breakdowntype == "YW") {
+            } else if (data[0].breakdowntype == "YM") {
                 values = _.map(data, function(d) {
+                    var data_value = {};
+                    data_value.xval = that.toDate(d.xval).format("MMM DD");
+                    data_value.yval = d.yval;
+                    data_value.name = d.name;
+
+                    // Only add zval into the data object if there is a zval
+                    if(d.zval !== undefined) {
+                      data_value.zval = d.zval;
+                    }
+                    return data_value;
+                });
+            } else if (data[0].breakdowntype == "YMD"){
+              values = _.map(data, function(d) {
                     var data_value = {};
                     data_value.xval = that.toDate(d.xval).format("MMM DD YYYY");
                     data_value.yval = d.yval;
@@ -170,12 +182,21 @@ var GroupedBarChart = function(param)
                     }
                     return data_value;
                 });
+            } else if (data[0].breakdowntype == "YW") {
+                // TODO currently the same format as YM. Verify with RT
+				          values = _.map(data, function(d) {
+                    var data_value = {};
+                    data_value.xval = that.toDate(d.xval).format("MMM DD");
+                    data_value.yval = d.yval;
+                    data_value.name = d.name;
 
-            } else if (data[0].breakdowntype == "YM") {
-                // code goes here...
-            } else {
-              // Ask about YW
-            }
+                    // Only add zval into the data object if there is a zval
+                    if(d.zval !== undefined) {
+                      data_value.zval = d.zval;
+                    }
+                    return data_value;
+                });
+			       }
 
                 return isDateData ? _.sortBy(values, function(d) {
                     return that.toDate(d.xval) - 0;
@@ -315,7 +336,7 @@ var GroupedBarChart = function(param)
                 .enter().append("g")
                 .attr("transform", function(d) { return "translate(" + that.xScale(d) + ",0)"; })
                 .selectAll("rect")
-                .data(function(d){ return _.where(data, {xval: d});})
+                .data(function(d){ return _.first(_.where(data, {xval: d}), maxBars); })
                 .enter().append("rect")
                 .attr("x", function(d) {
                       var x1                  = (_.findWhere(that.x1Scales, { mainCategory : d.xval})).x1Scale;
