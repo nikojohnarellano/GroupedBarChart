@@ -20,10 +20,18 @@
 <body>
     <div class="panel-body" >
         <div class="row">
-            <div class="col-md-12">
-                <div id="barLineChart" class="barLineChart">
+            
+                <div id="barLineChart1" class="barLineChart col-md-6">
                 </div>
-            </div>
+				<div id="barLineChart2" class="barLineChart col-md-6">
+                </div>
+        </div>
+		<div class="row">
+            
+                <div id="barLineChart3" class="barLineChart col-md-6">
+                </div>
+				<div id="barLineChart4" class="barLineChart col-md-6">
+                </div>
         </div>
     </div>
     <p class="clickUpdate"> Click to show dataset #1 <b>(breakdown by YM)</b></p>
@@ -34,10 +42,10 @@
 
     <script>
     var applicationColors = [ "#F5A623", "#00ADF3", "#00975E", "#AE53C0", "#FF7152", "#D22F43", "#50E3C2", "#FFD92F", "#A0E254", "#550000", "#E55F95", "#AA3939", "#304E0E", "#4745FF", "#6900C4" ];
-    var groupedBarParam = {
-        width: $("#barLineChart").width(),
+    var groupedBarParam1 = {
+        width: $("#barLineChart1").width(),
         height: 500,
-        elem: "#barLineChart",
+        elem: "#barLineChart1",
         chartTitle: "Bar Line Chart",
         xAxisLabel: "X Axis",
         yAxisLabel: "Y Axis",
@@ -45,15 +53,68 @@
         tooltipTitle: "Tooltip"
 
     }
-    var groupedBarChart = new GroupedBarChart(groupedBarParam);
+	var groupedBarParam2 = {
+        width: $("#barLineChart2").width(),
+        height: 500,
+        elem: "#barLineChart2",
+        chartTitle: "Bar Line Chart",
+        xAxisLabel: "X Axis",
+        yAxisLabel: "Y Axis",
+        zAxisLabel: "Z Axis",
+        tooltipTitle: "Tooltip"
 
+    }
+	var groupedBarParam3 = {
+        width: $("#barLineChart3").width(),
+        height: 500,
+        elem: "#barLineChart3",
+        chartTitle: "Bar Line Chart",
+        xAxisLabel: "X Axis",
+        yAxisLabel: "Y Axis",
+        zAxisLabel: "Z Axis",
+        tooltipTitle: "Tooltip"
+
+    }
+	var groupedBarParam4 = {
+        width: $("#barLineChart4").width(),
+        height: 500,
+        elem: "#barLineChart4",
+        chartTitle: "Bar Line Chart",
+        xAxisLabel: "X Axis",
+        yAxisLabel: "Y Axis",
+        zAxisLabel: "Z Axis",
+        tooltipTitle: "Tooltip"
+
+    }
+    var groupedBarChart1 = new GroupedBarChart(groupedBarParam1);
+	var groupedBarChart2 = new GroupedBarChart(groupedBarParam2);
+	var groupedBarChart3 = new GroupedBarChart(groupedBarParam3);
+	var groupedBarChart4 = new GroupedBarChart(groupedBarParam4);
+	
     d3.json("data/groupedbarstring.json", function(data) {
-        var groupedBarData = groupedBarChart.setGroupedBarChartData(data);
+        var groupedBarData = groupedBarChart1.setGroupedBarChartData(data);
         var precision = 0;
-        groupedBarChart.initChart(groupedBarData, precision, applicationColors);
-        groupedBarChart.updateChart(groupedBarData);
+        groupedBarChart1.initChart(groupedBarData, precision, applicationColors);
+        groupedBarChart1.updateChart(groupedBarData);
     });
-
+	d3.json("data/groupedbarstring.json", function(data) {
+        var groupedBarData = groupedBarChart2.setGroupedBarChartData(data);
+        var precision = 0;
+        groupedBarChart2.initChart(groupedBarData, precision, applicationColors);
+        groupedBarChart2.updateChart(groupedBarData);
+    });
+	d3.json("data/groupedbarstring.json", function(data) {
+        var groupedBarData = groupedBarChart3.setGroupedBarChartData(data);
+        var precision = 0;
+        groupedBarChart3.initChart(groupedBarData, precision, applicationColors);
+        groupedBarChart3.updateChart(groupedBarData);
+    });
+	d3.json("data/groupedbarstring.json", function(data) {
+        var groupedBarData = groupedBarChart4.setGroupedBarChartData(data);
+        var precision = 0;
+        groupedBarChart4.initChart(groupedBarData, precision, applicationColors);
+        groupedBarChart4.updateChart(groupedBarData);
+    });
     // TODO This doesn't output anything to the console. Need to ask Jose about the YW breakdown type.
     d3.json("data/groupedbaryw.json", function(data) {
 
