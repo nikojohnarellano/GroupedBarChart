@@ -303,13 +303,13 @@ var GroupedBarChart = function(param)
                 bar.attr("fill", lightenDarkenColor(bar.attr("fill"), mouseOverDarken));
 
                 var tooltipText = '';
-                if (d.name)
-                    tooltipText = "<strong>" + d.name + "</strong>";
-                if (d.yval)
-                    tooltipText +=  "<br>Score: <strong>" + d.yval.toFixed(that.precision)  + "</strong>";
+                if (d.name!==undefined)
+                    tooltipText = "<strong>" + d.name + "</strong><br>";
+                if (d.yval!==undefined)
+                    tooltipText +=  "Score: <strong>" + d.yval.toFixed(that.precision)  + "</strong><br>";
 
-                if (d.zval)
-                    tooltipText += "<br>Volume: <strong>" + d.zval.toFixed(that.precision)  + "</strong>";
+                if (d.zval!==undefined)
+                    tooltipText += "Volume: <strong>" + d.zval.toFixed(that.precision)  + "</strong><br>";
 
 
                 tooltip.transition()
@@ -374,19 +374,8 @@ var GroupedBarChart = function(param)
                 .style("pointer-events", "none")
                 // The transition produces a bouncing effect for the bar
                 .transition()
-                // Each bar will be delayed depending on its position in the graph
-                .delay(function(d, i) { return  _.indexOf(data, d) * 50;} )
-                .duration(barsAnimationTime/3)
-                // Expand height first (bounce effect)
-                .attr('y', function(d) { return that.yScale(d.yval) - 50; })
-                .attr('height', function(d) { return (that.h - that.yScale(d.yval)) + 50 ;})
-                .transition()
-                .duration(barsAnimationTime/3)
-                // Lower the height after (bounce effect)
-                .attr('y', function(d) { return that.yScale(d.yval) + 15; })
-                .attr('height', function(d) { return that.h - that.yScale(d.yval) - 15; })
-                .transition()
-                .duration(barsAnimationTime/3)
+                .duration(barsAnimationTime)
+                .ease("elastic")
                 // Turn back to original height
                 .attr('y', function(d) { return that.yScale(d.yval); })
                 .attr('height', function(d) { return that.h - that.yScale(d.yval); })
@@ -401,12 +390,12 @@ var GroupedBarChart = function(param)
               var mouseContainer = d3.select(elem + " svg");
               var mouseCoords    = d3.mouse(mouseContainer.node());
               var ballToolTipText = '';
-              if (d.x1)
-                  ballToolTipText = "<strong>" + d.x1 + "</strong>";
-              if (d.y)
-                  ballToolTipText +=  "<br>Score: <strong>" + d.y.toFixed(that.precision)  + "</strong>";
-              if (d.z)
-                  ballToolTipText +=  "<br>Volume: <strong>" + d.z.toFixed(that.precision)  + "</strong>";
+              if (d.x1!==undefined)
+                  ballToolTipText = "<strong>" + d.x1 + "</strong><br>";
+              if (d.y!==undefined)
+                  ballToolTipText +=  "Score: <strong>" + d.y.toFixed(that.precision)  + "</strong><br>";
+              if (d.z!==undefined)
+                  ballToolTipText +=  "Volume: <strong>" + d.z.toFixed(that.precision)  + "</strong><br>";
               tooltip.transition()
                   .duration(200)
                   .style("opacity", 1);
