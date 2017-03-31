@@ -81,10 +81,28 @@ var GroupedBarChart = function(param)
 
             that.maxSubCategoryLength = _.max(_.map(that.subCategories, sub => { return sub.subCategories.length}));
 
+            // Rounding function for max/min values
+            function roundx(n, x){ return Math.ceil(n/x)*x;}
+            function roundmin(n, x){ return Math.floor(n/x)*x;}
+            // Finds the number of digits before the decimal, for dynamic rounding
+            function numDigits(x) {
+                var n =  Math.trunc(Math.abs(x)).toString().length;
+                var tmp = "1";
+                for(var i = 1; i < n; i++) {
+                    tmp += '0';
+                }
+                return parseInt(tmp);
+            }
             that.yScale = d3.scale.linear()
-                .domain([0, 100])
+                //.domain([0, 100])
+                .domain([roundmin(_.min(_.pluck(data, 'yval')),numDigits(_.min(_.pluck(data, 'yval')))) - numDigits(_.min(_.pluck(data, 'yval'))),
+                           roundx(_.max(_.pluck(data, 'yval')),numDigits(_.max(_.pluck(data, 'yval')))) ])
                 .range([that.h, 0])
             ;
+            // These alert messages are for testing
+            //alert(numDigits(_.min(_.pluck(data, 'yval'))));
+            //alert(numDigits(_.max(_.pluck(data, 'yval'))));
+            //alert(numDigits(_.min(_.pluck(data, 'zval'))));
 
             that.xScale = d3.scale.ordinal()
                 .domain(that.mainCategories.map(function(d){ return d; }))
@@ -102,11 +120,12 @@ var GroupedBarChart = function(param)
                 };
             });
 
-            /*ZScale for Volume Measurement. The max vuloume Score
+            /*ZScale for Volume Measurement. The max volume Score
             is the maximum value rounded up to the nearest 1000*/
-            function roundx(n, x){ return Math.ceil(n/x)*x;}
             that.zScale = d3.scale.linear()
-                .domain([0, roundx(_.max(_.pluck(data, 'zval')),1000)+1])
+                //.domain([roundx(_.min(_.pluck(data, 'zval')),100)-100, roundx(_.max(_.pluck(data, 'zval')),1000)+1])
+                .domain([roundmin(_.min(_.pluck(data, 'zval')),numDigits(_.min(_.pluck(data, 'zval')))) - numDigits(_.min(_.pluck(data, 'zval'))),
+                           roundx(_.max(_.pluck(data, 'zval')),numDigits(_.max(_.pluck(data, 'zval'))))])
                 .range([that.h, 0])
             ;
 
