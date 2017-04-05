@@ -349,7 +349,7 @@ var GroupedBarChart = function(param)
 
             /* Transition Functions */
             /* Enter the data into the dom */
-            var barsAnimationTime = 1000;
+            var barsAnimationTime = data.length * 50;
             svg.append("g").selectAll("g")
                 .data(that.mainCategories)
                 .enter().append("g")
@@ -374,6 +374,7 @@ var GroupedBarChart = function(param)
                 .style("pointer-events", "none")
                 // The transition produces a bouncing effect for the bar
                 .transition()
+                .delay((d,i) => { return _.indexOf(data, d) * 50; })
                 .duration(barsAnimationTime)
                 .ease("elastic")
                 // Turn back to original height
